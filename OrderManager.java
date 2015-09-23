@@ -1,7 +1,8 @@
 import java.io.IOException;
 
 
-public class OrderManager implements QueueProcesser<NewOrderMessage>, MessageTransformer<NewOrderMessage> {
+public class OrderManager implements QueueProcesser<NewOrderMessage>, 
+									MessageTransformer<NewOrderMessage> {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -12,10 +13,11 @@ public class OrderManager implements QueueProcesser<NewOrderMessage>, MessageTra
 			ConfigLoader conf = ConfigLoader.getInstance();
 			String pedidosQueue = conf.getOrdersQueueName();
 			OrderManager manager = new OrderManager();
-			colaPedidos = new Queue<NewOrderMessage>(pedidosQueue, manager, manager);
+			colaPedidos = 
+					new Queue<NewOrderMessage>(pedidosQueue, manager, manager);
 			
 			colaPedidos.connect();
-			colaPedidos.recieve();
+			colaPedidos.receive();
 		} catch (IOException e) {
 			System.out.println("Error al leer de archivo.");
 		} catch (ColaException e) {
@@ -24,7 +26,7 @@ public class OrderManager implements QueueProcesser<NewOrderMessage>, MessageTra
 				try {
 					colaPedidos.disconnect();
 				} catch (ColaException e1) {
-					System.out.println("Error al desconectar cola de mensajes.");
+					System.out.println("Error al desconectar cola de mensajes");
 				}
 			}
 		}
@@ -33,14 +35,19 @@ public class OrderManager implements QueueProcesser<NewOrderMessage>, MessageTra
 	
 	
 	@Override
-	public void process(NewOrderMessage message) throws IOException, ColaException {
+	public void process(NewOrderMessage message) throws IOException, 
+														ColaException {
 		
-		System.out.println("Recibido "+message.getID()+" "+message.getTipo()+" "+message.getCantidad());
+		System.out.println("Recibido "+message.getID()+
+							" "+message.getTipo()+" "+message.getCantidad());
+		
 		ConfigLoader conf = ConfigLoader.getInstance();
 		
 		//pone el pedido en la cola de LOGGING
 		String loggingQueue = conf.getLoggingQueueName();
-		Queue<NewOrderMessage> colaNuevaOrden = new Queue<NewOrderMessage>(loggingQueue,this,this);
+		Queue<NewOrderMessage> colaNuevaOrden = 
+				new Queue<NewOrderMessage>(loggingQueue,this,this);
+		
 		colaNuevaOrden.connect();
 		System.out.println("conectado");
 		colaNuevaOrden.send(message);

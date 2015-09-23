@@ -4,7 +4,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 
-public class Logger implements QueueProcesser<NewOrderMessage>, MessageTransformer<NewOrderMessage> {
+public class Logger implements QueueProcesser<NewOrderMessage>, 
+								MessageTransformer<NewOrderMessage> {
 
 	public static void main(String[] args) {
 
@@ -15,10 +16,11 @@ public class Logger implements QueueProcesser<NewOrderMessage>, MessageTransform
 			String loggingQueue = conf.getLoggingQueueName();
 			
 			Logger logger = new Logger();
-			colaLogging = new Queue<NewOrderMessage>(loggingQueue, logger, logger);
+			colaLogging = 
+					new Queue<NewOrderMessage>(loggingQueue, logger, logger);
 
 			colaLogging.connect();
-			colaLogging.recieve();
+			colaLogging.receive();
 		} catch (IOException e) {
 			System.out.println("Error al leer de archivo.");
 		} catch (ColaException e) {
@@ -27,7 +29,7 @@ public class Logger implements QueueProcesser<NewOrderMessage>, MessageTransform
 				try {
 					colaLogging.disconnect();
 				} catch (ColaException e1) {
-					System.out.println("Error al desconectar cola de mensajes.");
+					System.out.println("Error al desconectar cola de mensajes");
 				}
 			}
 		}

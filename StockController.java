@@ -1,7 +1,8 @@
 import java.io.IOException;
 
 
-public class StockController implements QueueProcesser<NewOrderMessage>, MessageTransformer<NewOrderMessage> {
+public class StockController implements QueueProcesser<NewOrderMessage>, 
+										MessageTransformer<NewOrderMessage> {
 
 	public static void main(String[] args) {
 		//lee de la cola pedido: ID + TIPO + CANTIDAD
@@ -12,19 +13,21 @@ public class StockController implements QueueProcesser<NewOrderMessage>, Message
 			String processingQueue = conf.getProcessingQueueName();
 
 			StockController stockController = new StockController();
-			colaProcessing = new Queue<NewOrderMessage>(processingQueue,stockController,stockController);
+			colaProcessing = new Queue<NewOrderMessage>(
+							processingQueue,stockController,stockController);
 			
 			colaProcessing.connect();
-			colaProcessing.recieve();
+			colaProcessing.receive();
+			
 		} catch (IOException e) {
-			System.out.println("Error al leer de archivo.");
+			System.out.println("Error al leer de archivo de configuracion.");
 		} catch (ColaException e) {
 			System.out.println("Error de la cola de mensajes.");
 			if (colaProcessing != null) {
 				try {
 					colaProcessing.disconnect();
 				} catch (ColaException e1) {
-					System.out.println("Error al desconectar cola de mensajes.");
+					System.out.println("Error al desconectar cola de mensajes");
 				}
 			}
 		}
@@ -48,9 +51,11 @@ public class StockController implements QueueProcesser<NewOrderMessage>, Message
 		if (restado) {
 			//escribe "aceptada" en el archivo de ordenes, para ese ID
 			orders.changeOrderState(message.getID(),ConfigLoader.ACEPTADA);
+			System.out.println("Cambiado el estado de una orden a aceptada.");
 		} else {
 			//escribe "rechazada" en el archivo de ordenes, para ese ID
 			orders.changeOrderState(message.getID(),ConfigLoader.RECHAZADA);
+			System.out.println("Cambiado el estado de una orden a rechazada.");
 		}
 		
 	}

@@ -51,7 +51,7 @@ public class Queue <TMessage extends Message> {
 		}
 	}
 	
-	public void recieve() throws ColaException {
+	public void receive() throws ColaException {
 		
 		//defino qué hacer al consumir
 		Consumer consumer = new DefaultConsumer(channel) {

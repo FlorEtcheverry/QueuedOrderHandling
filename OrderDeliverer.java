@@ -15,7 +15,7 @@ public class OrderDeliverer implements QueueProcesser<OrderMessage>, MessageTran
 			colaUpdate = new Queue<OrderMessage>(changeStateQueue, orderDeliverer, orderDeliverer);
 
 			colaUpdate.connect();
-			colaUpdate.recieve();
+			colaUpdate.receive();
 		} catch (IOException e) {
 			System.out.println("Error al leer de archivo.");
 		} catch (ColaException e) {

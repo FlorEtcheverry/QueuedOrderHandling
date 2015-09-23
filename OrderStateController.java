@@ -2,7 +2,8 @@ import java.io.IOException;
 import java.util.UUID;
 
 
-public class OrderStateController implements QueueProcesser<OrderMessage>, MessageTransformer<OrderMessage> {
+public class OrderStateController implements QueueProcesser<OrderMessage>, 
+											MessageTransformer<OrderMessage> {
 
 	public static void main(String[] args) {
 		
@@ -12,10 +13,11 @@ public class OrderStateController implements QueueProcesser<OrderMessage>, Messa
 			String queryQueue = conf.getQueryStateQueueName();
 			
 			OrderStateController orderController = new OrderStateController();
-			colaQueries = new Queue<OrderMessage>(queryQueue, orderController, orderController);
+			colaQueries = new Queue<OrderMessage>(
+								queryQueue, orderController, orderController);
 
 			colaQueries.connect();
-			colaQueries.recieve(); //lee de la cola: ID de la orden
+			colaQueries.receive(); //lee de la cola: ID de la orden
 		} catch (IOException e) {
 			System.out.println("Error al leer de archivo.");
 		} catch (ColaException e) {
@@ -24,7 +26,7 @@ public class OrderStateController implements QueueProcesser<OrderMessage>, Messa
 				try {
 					colaQueries.disconnect();
 				} catch (ColaException e1) {
-					System.out.println("Error al desconectar cola de mensajes.");
+					System.out.println("Error al desconectar cola de mensajes");
 				}
 			}
 		}
@@ -37,7 +39,7 @@ public class OrderStateController implements QueueProcesser<OrderMessage>, Messa
 
 	@Override
 	public void process(OrderMessage message) throws IOException {
-		// TODO Auto-generated method stub
+
 		UUID idOrden = message.getOrderId();
 		
 		//se fija en el archivo de ordenes, para ese ID, el estado

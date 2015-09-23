@@ -41,6 +41,11 @@ public class Cliente implements QueueProcesser<NewOrderMessage>,
 			colaPedidos.connect();
 			colaQueries.connect();
 			int contador = 0;
+			int vueltasTotales = vueltas^2;
+			System.out.println(
+					"Iniciado cliente. Creara "+vueltasTotales+
+					" de nuevas ordenes. Cada "+vueltas+
+					" consultara por el estado de una orden.");
 			
 			for (int i=0; i<vueltas;i++){
 				
@@ -60,18 +65,24 @@ public class Cliente implements QueueProcesser<NewOrderMessage>,
 				OrderMessage mes = 
 						new OrderMessage(ids.get(r.nextInt(ids.size())));
 				colaQueries.send(mes);
+				System.out.println(
+						"Cliente envio consulta por ID: "+mes.getOrderId()+".");
 				
 			}		
 	
 			colaPedidos.disconnect();
 			colaQueries.disconnect();
+			System.out.println(
+			"Finalizada simulacion de clientes. Desconectado de las colas.");
 			
 		} catch (NumberFormatException e) {
 			System.out.println("Parametro incorrecto.");
 		} catch (IOException e) {
 			System.out.println("Error al leer de archivo.");
+			e.printStackTrace();
 		} catch (ColaException e) {
 			System.out.println("Error de la cola de mensajes.");
+			e.printStackTrace();
 		}
 	}
 
@@ -82,6 +93,5 @@ public class Cliente implements QueueProcesser<NewOrderMessage>,
 
 	@Override
 	public void process(NewOrderMessage message) {
-
 	}
 }

@@ -26,6 +26,7 @@ public class UUIDsGenerator {
 			System.out.println("No se pudo crear los IDs");
 			e.printStackTrace();
 		}
+		System.out.println("Finalizada la creacion de random IDs.");
 	}
 
 }

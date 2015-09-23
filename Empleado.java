@@ -15,6 +15,9 @@ public class Empleado implements QueueProcesser<OrderMessage>,
 		
 		int vueltas = Integer.parseInt(args[0]);
 		int time = Integer.parseInt(args[1]);
+		System.out.println(
+				"Iniciado un empleado. Va a consultar por "+vueltas+
+				" y dormirá "+time+"segundos.");
 		
 		try {
 			//cargar ids
@@ -28,7 +31,7 @@ public class Empleado implements QueueProcesser<OrderMessage>,
 					new Queue<OrderMessage>(deliverQueue, empleado, empleado);
 			
 			colaEntregar.connect();
-			System.out.println("Lista: " + ids.size() );
+
 			//manda consulta
 			for (int i=0; i<vueltas;i++){
 				//crear pedido
@@ -39,11 +42,14 @@ public class Empleado implements QueueProcesser<OrderMessage>,
 				
 				//envia mensaje con el ID
 				colaEntregar.send(msg);	
+				System.out.println("Empleado consultó por ID: "+id+".");
 				
 				Thread.sleep(time);
 			}
 			
 			colaEntregar.disconnect();
+			System.out.println(
+					"Finalizado un empleado. Desconectado de la cola");
 			
 		} catch (NumberFormatException e) {
 			System.out.println("Parametro incorrecto.");
@@ -63,7 +69,6 @@ public class Empleado implements QueueProcesser<OrderMessage>,
 
 	@Override
 	public void process(OrderMessage message) {
-		
 	}
 
 }

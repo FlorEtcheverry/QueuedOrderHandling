@@ -7,7 +7,7 @@ import java.nio.channels.FileLock;
 
 public class StockStorage {
 
-	public boolean restarStock(int tipo,int cant) throws IOException { //TODO
+	public boolean restarStock(int tipo,int cant) throws IOException {
 		//se fija para ese TIPO, el stock en el archivo
 		//si alcanza para su CANTIDAD
 		//resta el stock de archivo y devuelve true. Sino, false.
@@ -24,14 +24,13 @@ public class StockStorage {
 		FileLock lock = null;
 				
 		try {
-			
 			file = new RandomAccessFile(arch, "rw");
 			channel = file.getChannel();
 			lock = channel.lock();
 			
 			if (!existed) {
 				file.seek(0);
-				file.writeInt(0);
+				file.writeInt(ConfigLoader.getInstance().getMaxStock());
 				file.seek(0);
 			}
 			
@@ -42,15 +41,9 @@ public class StockStorage {
 			file.write(nuevo);
 			
 		} finally {
-			
-			try {
-				lock.release();
-				channel.close();
-				file.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			if (lock != null) lock.release();
+			if (channel != null) channel.close();
+			if (file != null) file.close();
 		}
 		return true;
 	}
@@ -70,14 +63,13 @@ public class StockStorage {
 		FileLock lock = null;
 				
 		try {
-			
 			file = new RandomAccessFile(arch, "rw");
 			channel = file.getChannel();
 			lock = channel.lock();
 			
 			if (!existed) {
 				file.seek(0);
-				file.writeInt(0);
+				file.writeInt(ConfigLoader.getInstance().getMaxStock());
 				file.seek(0);
 			}
 			
@@ -87,9 +79,9 @@ public class StockStorage {
 			file.writeInt(nuevo);
 			
 		} finally {
-			lock.release();
-			channel.close();
-			file.close();
+			if (lock != null) lock.release();
+			if (channel != null) channel.close();
+			if (file != null) file.close();
 		}
 	}
 }

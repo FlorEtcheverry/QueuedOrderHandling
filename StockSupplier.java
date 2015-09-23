@@ -18,7 +18,7 @@ public class StockSupplier implements QueueProcesser<StockMessage>, MessageTrans
 			colaStock = new Queue<StockMessage>(stockQueue,stockSupplier,stockSupplier);
 			
 			colaStock.connect();
-			colaStock.recieve();
+			colaStock.receive();
 		} catch (IOException e) {
 			System.out.println("Error al leer de archivo.");
 		} catch (ColaException e) {

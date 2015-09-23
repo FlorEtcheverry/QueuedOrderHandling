@@ -30,14 +30,21 @@ public class Administrador implements QueueProcesser<StockMessage>,
 			
 			//manda el msj: TIPO + CANTIDAD (a agregar)
 			colaAgregarStock.send(msg);
+			System.out.println(
+					"Administrador envio msj de aumentar stock de tipo "+tipo+
+					" en "+cant+" unidades.");
 			colaAgregarStock.disconnect();
+			System.out.println(
+					"Administrador finalizado. Desconectado de la cola");
 			
 		} catch (NumberFormatException e) {
 			System.out.println("Parametro incorrecto.");
 		} catch (IOException e) {
 			System.out.println("Error al leer de archivo.");
+			e.printStackTrace();
 		} catch (ColaException e) {
 			System.out.println("Error de la cola de mensajes.");
+			e.printStackTrace();
 		}
 	}
 

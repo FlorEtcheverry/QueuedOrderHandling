@@ -5,11 +5,9 @@
 # 4:number of StateControllers
 # 5:number of OrderDeliverers
 # 6:number of StockSuppliers
-# 7:loops from query
-# 8:sleep for query
-# 9:loops from empleado
-# 10:sleep for empleado
-# 11:cant de ids a generar
+# 7:loops from empleado
+# 8:sleep for empleado
+# 9:cant de ids a generar
 rm args.txt
 for i in $@ ;
 do echo $i >> args.txt;
@@ -22,11 +20,9 @@ then echo "# 1:loops from client
 	# 4:number of StateControllers 
 	# 5:number of OrderDeliverers 
 	# 6:number of StockSuppliers 
-	# 7:loops from query 
-	# 8:sleep for query 
-	# 9:loops from empleado 
-	# 10:sleep for empleado 
-	# 11:cant de ids a generar"
+	# 7:loops from empleado 
+	# 8:sleep for empleado 
+	# 9:cant de ids a generar"
 	exit
 fi
 declare -a array
@@ -73,9 +69,9 @@ done
 
 #procesos para simulacion
 #generador
-java -cp $CP UUIDsGenerator ${array[10]} 
+java -cp $CP UUIDsGenerator ${array[8]} 
 #cliente pedido
 java -cp $CP Cliente ${array[0]} &
 #update empleado
-java -cp $CP Empleado ${array[8]} ${array[9]} &
+java -cp $CP Empleado ${array[6]} ${array[7]} &
 
