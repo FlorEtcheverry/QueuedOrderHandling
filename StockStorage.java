@@ -7,7 +7,7 @@ import java.nio.channels.FileLock;
 
 public class StockStorage {
 
-	public boolean restarStock(int tipo,int cant) /*throws IOException*/ { //TODO
+	public boolean restarStock(int tipo,int cant) throws IOException { //TODO
 		//se fija para ese TIPO, el stock en el archivo
 		//si alcanza para su CANTIDAD
 		//resta el stock de archivo y devuelve true. Sino, false.
@@ -32,6 +32,7 @@ public class StockStorage {
 			if (!existed) {
 				file.seek(0);
 				file.writeInt(0);
+				file.seek(0);
 			}
 			
 			int leido = file.readInt();
@@ -40,8 +41,6 @@ public class StockStorage {
 			file.seek(0);
 			file.write(nuevo);
 			
-		} catch (IOException e){
-			e.printStackTrace();
 		} finally {
 			
 			try {
@@ -79,6 +78,7 @@ public class StockStorage {
 			if (!existed) {
 				file.seek(0);
 				file.writeInt(0);
+				file.seek(0);
 			}
 			
 			int leido = file.readInt();

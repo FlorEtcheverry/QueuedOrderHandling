@@ -19,19 +19,24 @@ public class Queue <TMessage extends Message> {
 	private Connection connection;
 	private Channel channel;
 	
-	public Queue(String name, QueueProcesser<TMessage> rcv, MessageTransformer<TMessage> trn) {
+	public Queue(
+			String name, 
+			QueueProcesser<TMessage> rcv, 
+			MessageTransformer<TMessage> trn) 
+	{
 		this.queueName = name;
 		this.reciever = rcv;
 		this.transformer = trn;
 	}
 
-	public void connect() {
+	public void connect() throws ColaException {
 		
-		ConfigLoader conf = ConfigLoader.getInstance();
-		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost(conf.getHost());
-		
-	    try {
+		try {
+			ConfigLoader conf = ConfigLoader.getInstance();
+			ConnectionFactory factory = new ConnectionFactory();
+			factory.setConnectionTimeout(5000);
+			factory.setHost(conf.getHost());
+			
 			connection = factory.newConnection();
 			channel = connection.createChannel();
 			
@@ -39,23 +44,15 @@ public class Queue <TMessage extends Message> {
 			channel.queueDeclare(queueName, true, false, false, null);
 			
 			//not to give more than one message to a worker at a time
-			channel.basicQos(1);
-			
-			System.out.println("cola conectada");
-
-			  
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			channel.basicQos(1);  
+		} catch (IOException | TimeoutException e) {
 			e.printStackTrace();
-		} catch (TimeoutException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ColaException();
 		}
 	}
 	
-	public void recieve() {
+	public void recieve() throws ColaException {
 		
-		System.out.println("por recibir");
 		//defino qué hacer al consumir
 		Consumer consumer = new DefaultConsumer(channel) {
 		    @Override
@@ -67,12 +64,13 @@ public class Queue <TMessage extends Message> {
 		    		) throws IOException {
 		    	
 		    	TMessage msj_recibido = Message.fromBytes(body, transformer);
-		    	System.out.println("msj recibido: "+msj_recibido.toString());
-		    	try { //TODO ???
+		    	try {
 		    		reciever.process(msj_recibido);
-	    		} finally {
+	    		} catch (ColaException e) {
+					System.out.println("Error al procesar el mensaje");
+					e.printStackTrace();
+				} finally {
 	    			//ack de msj procesado
-	    			System.out.println("procesado");
 	    			channel.basicAck(envelope.getDeliveryTag(), false);
 	    		}
 		    }
@@ -80,12 +78,9 @@ public class Queue <TMessage extends Message> {
 	    //lee pedido de la cola
 	    try {
 	    	//queue,autoACK,consumer
-	    	System.out.println("por consumir");
 			channel.basicConsume(queueName, false, consumer);
-			System.out.println("consumido");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ColaException();
 		}
 	}
 	
@@ -105,16 +100,12 @@ public class Queue <TMessage extends Message> {
 
 	}
 	
-	public void disconnect() {
+	public void disconnect() throws ColaException {
 		try {
 			channel.close();
 			connection.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TimeoutException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException | TimeoutException e) {
+			throw new ColaException();
 		}
 	}
 }

@@ -6,18 +6,31 @@ public class StockSupplier implements QueueProcesser<StockMessage>, MessageTrans
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		//lee msj de TIPO y CANT de stock
-		
-		//conectarse a la cola
-		ConfigLoader conf = ConfigLoader.getInstance();
-		String stockQueue = conf.getAddStockQueueName();
+		Queue<StockMessage> colaStock = null;
+		try {
+			//lee msj de TIPO y CANT de stock
+			
+			//conectarse a la cola
+			ConfigLoader conf = ConfigLoader.getInstance();
+			String stockQueue = conf.getAddStockQueueName();
 
-		StockSupplier stockSupplier = new StockSupplier();
-		Queue<StockMessage> colaStock = new Queue<StockMessage>(stockQueue,stockSupplier,stockSupplier);
-		
-		colaStock.connect();
-		colaStock.recieve();
-		colaStock.disconnect();
+			StockSupplier stockSupplier = new StockSupplier();
+			colaStock = new Queue<StockMessage>(stockQueue,stockSupplier,stockSupplier);
+			
+			colaStock.connect();
+			colaStock.recieve();
+		} catch (IOException e) {
+			System.out.println("Error al leer de archivo.");
+		} catch (ColaException e) {
+			System.out.println("Error de la cola de mensajes.");
+			if (colaStock != null) {
+				try {
+					colaStock.disconnect();
+				} catch (ColaException e1) {
+					System.out.println("Error al desconectar cola de mensajes.");
+				}
+			}
+		}
 	}
 
 	@Override

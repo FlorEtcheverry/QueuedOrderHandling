@@ -1,19 +1,33 @@
+import java.io.IOException;
 import java.util.UUID;
 
 
 public class OrderStateController implements QueueProcesser<OrderMessage>, MessageTransformer<OrderMessage> {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		ConfigLoader conf = ConfigLoader.getInstance();
-		String queryQueue = conf.getQueryStateQueueName();
 		
-		OrderStateController orderController = new OrderStateController();
-		Queue<OrderMessage> colaQueries = new Queue<OrderMessage>(queryQueue, orderController, orderController);
+		Queue<OrderMessage> colaQueries = null;
+		try {
+			ConfigLoader conf = ConfigLoader.getInstance();
+			String queryQueue = conf.getQueryStateQueueName();
+			
+			OrderStateController orderController = new OrderStateController();
+			colaQueries = new Queue<OrderMessage>(queryQueue, orderController, orderController);
 
-		colaQueries.connect();
-		colaQueries.recieve(); //lee de la cola: ID de la orden
-		colaQueries.disconnect();
+			colaQueries.connect();
+			colaQueries.recieve(); //lee de la cola: ID de la orden
+		} catch (IOException e) {
+			System.out.println("Error al leer de archivo.");
+		} catch (ColaException e) {
+			System.out.println("Error de la cola de mensajes.");
+			if (colaQueries != null) {
+				try {
+					colaQueries.disconnect();
+				} catch (ColaException e1) {
+					System.out.println("Error al desconectar cola de mensajes.");
+				}
+			}
+		}
 	}
 
 	@Override
@@ -22,7 +36,7 @@ public class OrderStateController implements QueueProcesser<OrderMessage>, Messa
 	}
 
 	@Override
-	public void process(OrderMessage message) {
+	public void process(OrderMessage message) throws IOException {
 		// TODO Auto-generated method stub
 		UUID idOrden = message.getOrderId();
 		

@@ -4,22 +4,31 @@ import java.io.IOException;
 public class StockController implements QueueProcesser<NewOrderMessage>, MessageTransformer<NewOrderMessage> {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		//lee de la cola pedido: ID + TIPO + CANTIDAD
 		
-		ConfigLoader conf = ConfigLoader.getInstance();
-		String processingQueue = conf.getProcessingQueueName();
-
-		StockController stockController = new StockController();
-		Queue<NewOrderMessage> colaProcessing = new Queue<NewOrderMessage>(processingQueue,stockController,stockController);
-		
-		colaProcessing.connect();
+		Queue<NewOrderMessage> colaProcessing = null;
 		try {
-			while (true)
-				colaProcessing.recieve();
-		} finally {
-			colaProcessing.disconnect();
+			ConfigLoader conf = ConfigLoader.getInstance();
+			String processingQueue = conf.getProcessingQueueName();
+
+			StockController stockController = new StockController();
+			colaProcessing = new Queue<NewOrderMessage>(processingQueue,stockController,stockController);
+			
+			colaProcessing.connect();
+			colaProcessing.recieve();
+		} catch (IOException e) {
+			System.out.println("Error al leer de archivo.");
+		} catch (ColaException e) {
+			System.out.println("Error de la cola de mensajes.");
+			if (colaProcessing != null) {
+				try {
+					colaProcessing.disconnect();
+				} catch (ColaException e1) {
+					System.out.println("Error al desconectar cola de mensajes.");
+				}
+			}
 		}
+
 	}
 
 	@Override

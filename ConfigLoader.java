@@ -9,54 +9,61 @@ public class ConfigLoader {
 	
 	private static ConfigLoader instance = null;
 	
-	public static ConfigLoader getInstance() {
+	public static ConfigLoader getInstance() throws IOException {
 		if (instance == null)
 			instance = new ConfigLoader();
 		return instance;
 	}
 	
-	private ConfigLoader() {
+	private ConfigLoader() throws IOException {
 		config = new Properties();
-		try {
-			FileInputStream in = new FileInputStream("config.properties");
-			config.load(in);
-			in.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		FileInputStream in = new FileInputStream("config.properties");
+		config.load(in);
+		in.close();
 	}
 	
 	public String getHost() {
-		return config.getProperty("host","localhost"); //TODO
+		return config.getProperty("host","localhost"); 
 	}
 	
 	public String getOrdersQueueName() {
-		return config.getProperty("ordersQueue","newOrder_queue"); //TODO
+		return config.getProperty("ordersQueue","newOrder_queue"); 
 	}
 	
 	public String getLoggingQueueName() {
-		return config.getProperty("loggingQueue","logging_queue"); //TODO
+		return config.getProperty("loggingQueue","logging_queue"); 
 	}
 	
 	public String getProcessingQueueName() {
-		return config.getProperty("processingQueue","processing_queue"); //TODO
+		return config.getProperty("processingQueue","processing_queue"); 
 	}
 	
 	public String getQueryStateQueueName() {
-		return config.getProperty("queryQueue","query_queue"); //TODO
+		return config.getProperty("queryQueue","query_queue");
 	}
 	
 	public String getUpdateStateQueueName() {
-		return config.getProperty("deliverQueue","deliver_queue"); //TODO
+		return config.getProperty("deliverQueue","deliver_queue");
 	}
 	
 	public String getAddStockQueueName() {
-		return config.getProperty("addStockQueue","addStock_queue"); //TODO
+		return config.getProperty("addStockQueue","addStock_queue"); 
 	}
 	
 	public String getLogFilePath() {
-		return config.getProperty("logFilePath","orders.log"); //TODO
+		return config.getProperty("logFilePath","orders.log");
+	}
+	
+	public int getMaxTipo() {
+		return Integer.parseInt(config.getProperty("maxTipo","10"));
+	}
+	
+	public int getMaxStock() {
+		return  Integer.parseInt(config.getProperty("maxStock","100000"));
+	}
+	
+	public String getIDsFile() {
+		return  config.getProperty("idsPath","ids");
 	}
 	
 	public static final char RECIBIDA = 'R';

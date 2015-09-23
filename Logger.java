@@ -7,22 +7,31 @@ import java.util.Date;
 public class Logger implements QueueProcesser<NewOrderMessage>, MessageTransformer<NewOrderMessage> {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
-		//lee de la cola msj de pedido
-		ConfigLoader conf = ConfigLoader.getInstance();
-		String loggingQueue = conf.getLoggingQueueName();
-		
-		Logger logger = new Logger();
-		Queue<NewOrderMessage> colaLogging = new Queue<NewOrderMessage>(loggingQueue, logger, logger);
-
-		colaLogging.connect();
+		Queue<NewOrderMessage> colaLogging = null;
 		try {
-			while (true)
+			//lee de la cola msj de pedido
+			ConfigLoader conf = ConfigLoader.getInstance();
+			String loggingQueue = conf.getLoggingQueueName();
+			
+			Logger logger = new Logger();
+			colaLogging = new Queue<NewOrderMessage>(loggingQueue, logger, logger);
+
+			colaLogging.connect();
 			colaLogging.recieve();
-		} finally {
-		colaLogging.disconnect();
+		} catch (IOException e) {
+			System.out.println("Error al leer de archivo.");
+		} catch (ColaException e) {
+			System.out.println("Error de la cola de mensajes.");
+			if (colaLogging != null) {
+				try {
+					colaLogging.disconnect();
+				} catch (ColaException e1) {
+					System.out.println("Error al desconectar cola de mensajes.");
+				}
+			}
 		}
+
 	}
 
 	@Override
@@ -32,7 +41,6 @@ public class Logger implements QueueProcesser<NewOrderMessage>, MessageTransform
 
 	@Override
 	public void process(NewOrderMessage message) throws IOException {
-		// TODO Auto-generated method stub
 		//appendea en el archivo: timestamp + msj (id pedido+tipo+cant)
 		
 		Date time = new Date();

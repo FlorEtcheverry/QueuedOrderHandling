@@ -5,16 +5,29 @@ import java.util.UUID;
 public class OrderDeliverer implements QueueProcesser<OrderMessage>, MessageTransformer<OrderMessage> {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		ConfigLoader conf = ConfigLoader.getInstance();
-		String changeStateQueue = conf.getUpdateStateQueueName();
 		
-		OrderDeliverer orderDeliverer = new OrderDeliverer();
-		Queue<OrderMessage> colaUpdate = new Queue<OrderMessage>(changeStateQueue, orderDeliverer, orderDeliverer);
+		Queue<OrderMessage> colaUpdate = null;
+		try {
+			ConfigLoader conf = ConfigLoader.getInstance();
+			String changeStateQueue = conf.getUpdateStateQueueName();
+			
+			OrderDeliverer orderDeliverer = new OrderDeliverer();
+			colaUpdate = new Queue<OrderMessage>(changeStateQueue, orderDeliverer, orderDeliverer);
 
-		colaUpdate.connect();
-		colaUpdate.recieve();
-		colaUpdate.disconnect();
+			colaUpdate.connect();
+			colaUpdate.recieve();
+		} catch (IOException e) {
+			System.out.println("Error al leer de archivo.");
+		} catch (ColaException e) {
+			System.out.println("Error de la cola de mensajes.");
+			if (colaUpdate != null) {
+				try {
+					colaUpdate.disconnect();
+				} catch (ColaException e1) {
+					System.out.println("Error al desconectar cola de mensajes.");
+				}
+			}
+		}
 	}
 
 	@Override
@@ -24,7 +37,7 @@ public class OrderDeliverer implements QueueProcesser<OrderMessage>, MessageTran
 
 	@Override
 	public void process(OrderMessage message) throws IOException {
-		// TODO Auto-generated method stub
+
 		//lee de la cola el ID de la orden
 		UUID id = message.getOrderId();
 		

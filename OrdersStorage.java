@@ -89,7 +89,7 @@ public class OrdersStorage {
 		*/
 	}
 	
-	public synchronized void changeOrderState(UUID id,char estado) throws IOException {
+	public void changeOrderState(UUID id,char estado) throws IOException {
 		//TODO
 		
 		String pathStr = id.toString().substring(0, 1);
@@ -159,8 +159,38 @@ public class OrdersStorage {
 		}
 	}
 	
-	public synchronized char getOrderState(UUID id){
-		//TODO
-		return 'a';
+	public char getOrderState(UUID id) throws IOException{
+		
+		String pathStr = id.toString().substring(0, 1);
+		File arch = new File(pathStr);
+		if (!arch.exists()) {
+			arch.createNewFile();
+		}
+		RandomAccessFile file = new RandomAccessFile(arch, "rw");
+		FileChannel channel = file.getChannel();
+		FileLock lock = channel.lock();
+		
+		int lineLength = id.toString().length()+1;
+		byte[] orden = new byte[lineLength];
+		
+		try {
+			while (file.getFilePointer() <= file.length()) {
+				int res = file.read(orden);
+				if (res == orden.length) {
+					String[] leido = orden.toString().split("|");
+					String idStr = leido[0];
+					if (id.toString().equals(idStr)) {
+						return leido[1].charAt(0);
+					}
+				}
+			}
+		} catch (EOFException e) {
+			//TODO
+		} finally {
+			lock.release();
+			file.close();
+			channel.close();
+		}
+		return 'o';
 	}
 }
