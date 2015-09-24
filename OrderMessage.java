@@ -4,10 +4,7 @@ import java.util.UUID;
 
 public class OrderMessage extends Message implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L; //TODO
+	private static final long serialVersionUID = 1L;
 	
 	private UUID orderId;
 

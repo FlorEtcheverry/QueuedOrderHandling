@@ -14,7 +14,8 @@ do echo $i >> args.txt;
 done
 
 if [ $# -eq 0 ];
-then echo "# 1:loops from client 
+then echo "
+	# 1:loops from client: n -Va a hacer este n^2 (crea n pedidos, consulta uno, vuelve a crear n, eso n veces)
 	# 2:number of OrderManagers 
 	# 3:number of StockControllers 
 	# 4:number of StateControllers 
@@ -32,7 +33,6 @@ do
 	array[$i]=$line
 	((i++))
 done <  args.txt
-echo $array
 export CP=.:commons-io-1.2.jar:commons-cli-1.1.jar:rabbitmq-client.jar
 
 #Compilar:

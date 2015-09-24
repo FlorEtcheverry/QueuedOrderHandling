@@ -4,10 +4,7 @@ import java.util.UUID;
 
 public class NewOrderMessage extends Message implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L; //TODO
+	private static final long serialVersionUID = 1L;
 	
 	private UUID id;
 	private int tipo_prod;
@@ -33,6 +30,7 @@ public class NewOrderMessage extends Message implements Serializable {
 	
 	@Override
 	public String toString() {
-		return ("ID: "+id.toString()+" - Tipo Prod: "+tipo_prod+" - Cantidad: "+cantidad_pedida+".");
+		return ("ID: "+id.toString()+" - Tipo Prod: "+
+					tipo_prod+" - Cantidad: "+cantidad_pedida+".");
 	}
 }

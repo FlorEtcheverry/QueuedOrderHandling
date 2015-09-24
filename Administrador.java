@@ -55,7 +55,5 @@ public class Administrador implements QueueProcesser<StockMessage>,
 
 	@Override
 	public void process(StockMessage message) {
-		// TODO Auto-generated method stub
-		
 	}
 }

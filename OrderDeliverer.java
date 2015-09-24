@@ -2,7 +2,8 @@ import java.io.IOException;
 import java.util.UUID;
 
 
-public class OrderDeliverer implements QueueProcesser<OrderMessage>, MessageTransformer<OrderMessage> {
+public class OrderDeliverer implements QueueProcesser<OrderMessage>, 
+									MessageTransformer<OrderMessage> {
 
 	public static void main(String[] args) {
 		
@@ -12,7 +13,8 @@ public class OrderDeliverer implements QueueProcesser<OrderMessage>, MessageTran
 			String changeStateQueue = conf.getUpdateStateQueueName();
 			
 			OrderDeliverer orderDeliverer = new OrderDeliverer();
-			colaUpdate = new Queue<OrderMessage>(changeStateQueue, orderDeliverer, orderDeliverer);
+			colaUpdate = new Queue<OrderMessage>(
+							changeStateQueue, orderDeliverer, orderDeliverer);
 
 			colaUpdate.connect();
 			colaUpdate.receive();
@@ -24,7 +26,7 @@ public class OrderDeliverer implements QueueProcesser<OrderMessage>, MessageTran
 				try {
 					colaUpdate.disconnect();
 				} catch (ColaException e1) {
-					System.out.println("Error al desconectar cola de mensajes.");
+					System.out.println("Error al desconectar cola de mensajes");
 				}
 			}
 		}
@@ -41,13 +43,15 @@ public class OrderDeliverer implements QueueProcesser<OrderMessage>, MessageTran
 		//lee de la cola el ID de la orden
 		UUID id = message.getOrderId();
 		
-		//cambia el estado de "aceptada" a "entregada" ---sino estaba en aceptada, ERROR
+		//cambia el estado de "aceptada" a "entregada"
 		OrdersStorage ordenes = new OrdersStorage();
 		char estado = ordenes.getOrderState(id);
 		if (estado == ConfigLoader.ACEPTADA) {
 			ordenes.saveNewOrder(id, estado);
 		} else {
-			//el ID no es válido TODO
+			//el ID no es válido
+			System.out.println("El ID "+id.toString()+
+					" no se puede aceptar porque la orden no fue aceptada.");
 		}
 		
 	}

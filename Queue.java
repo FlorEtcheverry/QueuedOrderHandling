@@ -80,11 +80,12 @@ public class Queue <TMessage extends Message> {
 	    	//queue,autoACK,consumer
 			channel.basicConsume(queueName, false, consumer);
 		} catch (IOException e) {
+			e.printStackTrace();
 			throw new ColaException();
 		}
 	}
 	
-	public void send(TMessage msg) {
+	public void send(TMessage msg) throws ColaException {
 		//mandar msj
 		try {
 			channel.basicPublish(
@@ -93,11 +94,9 @@ public class Queue <TMessage extends Message> {
 					MessageProperties.PERSISTENT_TEXT_PLAIN,
 					msg.getBytes());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new ColaException();
 		}
-		System.out.println("msj mandado: "+msg.toString());
-
 	}
 	
 	public void disconnect() throws ColaException {
@@ -105,6 +104,7 @@ public class Queue <TMessage extends Message> {
 			channel.close();
 			connection.close();
 		} catch (IOException | TimeoutException e) {
+			e.printStackTrace();
 			throw new ColaException();
 		}
 	}

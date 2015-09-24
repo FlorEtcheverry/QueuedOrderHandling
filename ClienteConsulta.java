@@ -11,7 +11,6 @@ public class ClienteConsulta implements QueueProcesser<OrderMessage>,
 
 	@Override
 	public void process(OrderMessage message) throws IOException {
-		// TODO Auto-generated method stub
 	}
 
 	

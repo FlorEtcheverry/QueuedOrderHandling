@@ -1,10 +1,10 @@
 import java.io.IOException;
 
 
-public class StockSupplier implements QueueProcesser<StockMessage>, MessageTransformer<StockMessage> {
+public class StockSupplier implements QueueProcesser<StockMessage>, 
+									MessageTransformer<StockMessage> {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
 		Queue<StockMessage> colaStock = null;
 		try {
@@ -14,8 +14,8 @@ public class StockSupplier implements QueueProcesser<StockMessage>, MessageTrans
 			ConfigLoader conf = ConfigLoader.getInstance();
 			String stockQueue = conf.getAddStockQueueName();
 
-			StockSupplier stockSupplier = new StockSupplier();
-			colaStock = new Queue<StockMessage>(stockQueue,stockSupplier,stockSupplier);
+			StockSupplier stockSup = new StockSupplier();
+			colaStock = new Queue<StockMessage>(stockQueue,stockSup,stockSup);
 			
 			colaStock.connect();
 			colaStock.receive();
@@ -27,7 +27,7 @@ public class StockSupplier implements QueueProcesser<StockMessage>, MessageTrans
 				try {
 					colaStock.disconnect();
 				} catch (ColaException e1) {
-					System.out.println("Error al desconectar cola de mensajes.");
+					System.out.println("Error al desconectar cola de mensajes");
 				}
 			}
 		}
@@ -40,7 +40,6 @@ public class StockSupplier implements QueueProcesser<StockMessage>, MessageTrans
 
 	@Override
 	public void process(StockMessage message) throws IOException {
-		// TODO Auto-generated method stub
 		int tipo = message.getTipo();
 		int cant = message.getCantidad();
 		

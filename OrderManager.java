@@ -5,7 +5,6 @@ public class OrderManager implements QueueProcesser<NewOrderMessage>,
 									MessageTransformer<NewOrderMessage> {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		
 		Queue<NewOrderMessage> colaPedidos = null;
 		try {
@@ -38,8 +37,9 @@ public class OrderManager implements QueueProcesser<NewOrderMessage>,
 	public void process(NewOrderMessage message) throws IOException, 
 														ColaException {
 		
-		System.out.println("Recibido "+message.getID()+
+		/*System.out.println("Orden nueva recibida: "+message.getID()+
 							" "+message.getTipo()+" "+message.getCantidad());
+		*/
 		
 		ConfigLoader conf = ConfigLoader.getInstance();
 		
@@ -49,26 +49,20 @@ public class OrderManager implements QueueProcesser<NewOrderMessage>,
 				new Queue<NewOrderMessage>(loggingQueue,this,this);
 		
 		colaNuevaOrden.connect();
-		System.out.println("conectado");
 		colaNuevaOrden.send(message);
-		System.out.println("mandado a logger");
 		colaNuevaOrden.disconnect();
-		System.out.println("desconectado");
 		
 		//pone el pedido en el archivo de Orders (ID + "recibida")
 		OrdersStorage orders = new OrdersStorage();
 		orders.saveNewOrder(message.getID(),ConfigLoader.RECIBIDA);
-		System.out.println("orden guardada");
 		
 		//manda el pedido a la cola de PROCESSING
 		String processingQueue = conf.getProcessingQueueName();
-		Queue<NewOrderMessage> colaProcesar = new Queue<NewOrderMessage>(processingQueue,this,this);
+		Queue<NewOrderMessage> colaProcesar = 
+						new Queue<NewOrderMessage>(processingQueue,this,this);
 		colaProcesar.connect();
-		System.out.println("conectado a pr");
 		colaProcesar.send(message);
-		System.out.println("msj mandado a pr");
 		colaProcesar.disconnect();
-		System.out.println("desconectado de pro");
 	}
 
 	@Override

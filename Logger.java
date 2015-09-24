@@ -46,7 +46,8 @@ public class Logger implements QueueProcesser<NewOrderMessage>,
 		//appendea en el archivo: timestamp + msj (id pedido+tipo+cant)
 		
 		Date time = new Date();
-		String msg = time+" "+message.getID()+" "+message.getCantidad();
+		String msg = time+" : "+message.getID()+" Producto tipo: "+
+						message.getTipo()+" Cantidad: "+message.getCantidad();
 	
 		File file = new File(ConfigLoader.getInstance().getLogFilePath());
 		if (!file.exists()) {

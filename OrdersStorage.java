@@ -1,4 +1,3 @@
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -10,7 +9,7 @@ public class OrdersStorage {
 
 	public void saveNewOrder(UUID id,char estado) throws IOException {
 		
-		String pathStr = id.toString().substring(0, 1);
+		String pathStr = (id.toString().substring(0, 1));
 		File arch = new File(pathStr);
 		if (!arch.exists()) {
 			arch.createNewFile();
@@ -25,7 +24,7 @@ public class OrdersStorage {
 			channel = file.getChannel();
 			lock = channel.lock();
 			
-			int lineLength = id.toString().length()+1;
+			int lineLength = id.toString().length()+2;
 			byte[] orden = new byte[lineLength];
 			orden = (id.toString()+"|"+String.valueOf(estado)).getBytes();
 			file.seek(file.length());
@@ -40,7 +39,7 @@ public class OrdersStorage {
 	
 	public void changeOrderState(UUID id,char estado) throws IOException {
 		
-		String pathStr = id.toString().substring(0, 1);
+		String pathStr = (id.toString().substring(0, 1));
 		File arch = new File(pathStr);
 		if (!arch.exists()) {
 			arch.createNewFile();
@@ -50,17 +49,20 @@ public class OrdersStorage {
 		FileChannel channel = file.getChannel();
 		FileLock lock = channel.lock();
 		
-		int lineLength = id.toString().length()+1;
+		int lineLength = id.toString().length()+2;
 		byte[] orden = new byte[lineLength];
 		boolean encontrado = false;
 		
 		try {
-			while (file.getFilePointer() <= file.length() && !encontrado) {
+			while ((file.getFilePointer() <= file.length()) && !encontrado) {
 				int res = file.read(orden);
+				if (res == -1) break;
+				String linea = new String(orden);
 				if (res == orden.length) {
-					String[] leido = orden.toString().split("|");
+					String[] leido = linea.split("\\|");
 					String idStr = leido[0];
-					if (id.toString().equals(idStr) && leido[1].equals(String.valueOf(ConfigLoader.RECIBIDA))) {
+					if (id.toString().equals(idStr) && leido[1].equals(
+									String.valueOf(ConfigLoader.RECIBIDA))) {
 						file.seek(file.getFilePointer()-lineLength);
 						String nuevo = idStr+"|"+String.valueOf(estado);
 						file.write(nuevo.getBytes());
@@ -68,10 +70,7 @@ public class OrdersStorage {
 					}
 				}
 			}
-		} catch (EOFException e) {
-			//TODO
-		}
-		finally {
+		} finally {
 			lock.release();
 			file.close();
 			channel.close();
@@ -80,7 +79,7 @@ public class OrdersStorage {
 	
 	public char getOrderState(UUID id) throws IOException{
 		
-		String pathStr = id.toString().substring(0, 1);
+		String pathStr = (id.toString().substring(0, 1));
 		File arch = new File(pathStr);
 		if (!arch.exists()) {
 			arch.createNewFile();
@@ -89,22 +88,22 @@ public class OrdersStorage {
 		FileChannel channel = file.getChannel();
 		FileLock lock = channel.lock();
 		
-		int lineLength = id.toString().length()+1;
+		int lineLength = id.toString().length()+2;
 		byte[] orden = new byte[lineLength];
 		
 		try {
-			while (file.getFilePointer() <= file.length()) {
+			while ((file.getFilePointer() <= file.length())) {
 				int res = file.read(orden);
+				if (res == -1) break;
+				String linea = new String(orden);
 				if (res == orden.length) {
-					String[] leido = orden.toString().split("|");
+					String[] leido = linea.split("\\|");
 					String idStr = leido[0];
 					if (id.toString().equals(idStr)) {
 						return leido[1].charAt(0);
 					}
 				}
 			}
-		} catch (EOFException e) {
-			//TODO
 		} finally {
 			lock.release();
 			file.close();

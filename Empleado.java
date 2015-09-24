@@ -34,6 +34,8 @@ public class Empleado implements QueueProcesser<OrderMessage>,
 
 			//manda consulta
 			for (int i=0; i<vueltas;i++){
+				Thread.sleep(time);
+				
 				//crear pedido
 				UUID id = ids.get(i);
 				
@@ -43,8 +45,6 @@ public class Empleado implements QueueProcesser<OrderMessage>,
 				//envia mensaje con el ID
 				colaEntregar.send(msg);	
 				System.out.println("Empleado consultó por ID: "+id+".");
-				
-				Thread.sleep(time);
 			}
 			
 			colaEntregar.disconnect();

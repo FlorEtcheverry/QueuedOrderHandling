@@ -15,28 +15,25 @@ public abstract class Message implements Serializable {
 	
 	public abstract String toString();
 	
-	public byte[] getBytes() {
+	public byte[] getBytes() throws IOException {
 		byte[] bytes;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try{
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(this);
-            oos.flush();
-            oos.reset();
-            bytes = baos.toByteArray();
-            oos.close();
-            baos.close();
-        } catch(IOException e){
-        	bytes = new byte[] {}; //TODO
-        }
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(this);
+        oos.flush();
+        oos.reset();
+        bytes = baos.toByteArray();
+        oos.close();
+        baos.close();
         return bytes;
 	}
 
 	public static
 	<TMessage extends Message,
 	TTransformer extends MessageTransformer<TMessage>> TMessage fromBytes(
-			byte[] body, 
-			TTransformer transformer) {
+								byte[] body, 
+								TTransformer transformer) throws IOException 
+	{
         TMessage mes = null;
         try {
             ByteArrayInputStream bis = new ByteArrayInputStream(body);
@@ -44,12 +41,9 @@ public abstract class Message implements Serializable {
             mes = transformer.transform(ois.readObject());
             ois.close();
             bis.close();
-        }
-        catch (IOException e) { //TODO EXC!!
-            e.printStackTrace();
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
+            throw new Error();
         }
         return mes;
     }

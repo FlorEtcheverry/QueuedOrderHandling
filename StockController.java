@@ -51,11 +51,13 @@ public class StockController implements QueueProcesser<NewOrderMessage>,
 		if (restado) {
 			//escribe "aceptada" en el archivo de ordenes, para ese ID
 			orders.changeOrderState(message.getID(),ConfigLoader.ACEPTADA);
-			System.out.println("Cambiado el estado de una orden a aceptada.");
+			System.out.println("Cambiado el estado de orden "+
+											message.getID()+" a aceptada.");
 		} else {
 			//escribe "rechazada" en el archivo de ordenes, para ese ID
 			orders.changeOrderState(message.getID(),ConfigLoader.RECHAZADA);
-			System.out.println("Cambiado el estado de una orden a rechazada.");
+			System.out.println("Cambiado el estado de orden "+
+											message.getID()+" a rechazada.");
 		}
 		
 	}

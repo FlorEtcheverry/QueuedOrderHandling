@@ -38,7 +38,7 @@ public class StockStorage {
 			int nuevo = leido-cant;
 			if (nuevo < 0) return false;
 			file.seek(0);
-			file.write(nuevo);
+			file.writeInt(nuevo);
 			
 		} finally {
 			if (lock != null) lock.release();
@@ -77,6 +77,7 @@ public class StockStorage {
 			int nuevo = leido+cant;
 			file.seek(0);
 			file.writeInt(nuevo);
+			System.out.println("Stock sumado. Nuevo stock: "+nuevo);
 			
 		} finally {
 			if (lock != null) lock.release();
