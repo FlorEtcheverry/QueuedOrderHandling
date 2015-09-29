@@ -47,7 +47,7 @@ public class Queue <TMessage extends Message> {
 			channel.basicQos(1);  
 		} catch (IOException | TimeoutException e) {
 			e.printStackTrace();
-			throw new ColaException();
+			throw new ColaException(e);
 		}
 	}
 	
@@ -79,9 +79,10 @@ public class Queue <TMessage extends Message> {
 	    try {
 	    	//queue,autoACK,consumer
 			channel.basicConsume(queueName, false, consumer);
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new ColaException();
+		}
+	    catch (IOException e) {
+	    	e.printStackTrace();
+			throw new ColaException(e);
 		}
 	}
 	
@@ -95,17 +96,17 @@ public class Queue <TMessage extends Message> {
 					msg.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new ColaException();
+			throw new ColaException(e);
 		}
 	}
 	
 	public void disconnect() throws ColaException {
 		try {
-			channel.close();
-			connection.close();
+			if (channel != null) channel.close();
+			if (connection != null)	connection.close();
 		} catch (IOException | TimeoutException e) {
 			e.printStackTrace();
-			throw new ColaException();
+			throw new ColaException(e);
 		}
 	}
 }

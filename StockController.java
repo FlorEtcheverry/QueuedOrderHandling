@@ -23,6 +23,7 @@ public class StockController implements QueueProcesser<NewOrderMessage>,
 			System.out.println("Error al leer de archivo de configuracion.");
 		} catch (ColaException e) {
 			System.out.println("Error de la cola de mensajes.");
+		} finally {
 			if (colaProcessing != null) {
 				try {
 					colaProcessing.disconnect();

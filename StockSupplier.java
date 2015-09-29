@@ -19,10 +19,12 @@ public class StockSupplier implements QueueProcesser<StockMessage>,
 			
 			colaStock.connect();
 			colaStock.receive();
+			
 		} catch (IOException e) {
 			System.out.println("Error al leer de archivo.");
 		} catch (ColaException e) {
 			System.out.println("Error de la cola de mensajes.");
+		} finally {
 			if (colaStock != null) {
 				try {
 					colaStock.disconnect();

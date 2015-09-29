@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 import java.util.UUID;
 
@@ -14,6 +15,9 @@ public class Cliente implements QueueProcesser<NewOrderMessage>,
 			System.out.println("Error, parametro: cantidad de ciclos.");
 		}
 
+		Queue<NewOrderMessage> colaPedidos = null;
+		Queue<OrderMessage> colaQueries = null;
+		
 		try {
 			ConfigLoader conf = ConfigLoader.getInstance();
 			String pedidosQueue = conf.getOrdersQueueName();
@@ -21,13 +25,12 @@ public class Cliente implements QueueProcesser<NewOrderMessage>,
 			
 			Cliente cliente = new Cliente();
 			ClienteConsulta clienteConsulta = new ClienteConsulta();
-			Queue<NewOrderMessage> colaPedidos = 
+			colaPedidos = 
 					new Queue<NewOrderMessage>(pedidosQueue, cliente, cliente);
-			Queue<OrderMessage> colaQueries = 
-					new Queue<OrderMessage>(
-							queriesQueue, 
-							clienteConsulta, 
-							clienteConsulta);
+			colaQueries = new Queue<OrderMessage>(
+												queriesQueue, 
+												clienteConsulta, 
+												clienteConsulta);
 			
 			//cargar ids
 			UUIDsReader idRead = new UUIDsReader();
@@ -40,49 +43,60 @@ public class Cliente implements QueueProcesser<NewOrderMessage>,
 			
 			colaPedidos.connect();
 			colaQueries.connect();
-			int contador = 0;
-			int vueltasTotales = vueltas^2;
+
 			System.out.println(
-					"Iniciado cliente. Creara "+vueltasTotales+
-					" de nuevas ordenes. Cada "+vueltas+
-					" consultara por el estado de una orden.");
+					"Iniciado cliente. Creara "+vueltas+" de nuevas ordenes. "
+					+ "Luego consultará por el estado de esas ordenes.");
+			ArrayList<UUID> idsUSados = new ArrayList<UUID>();
 			
-			for (int i=0; i<vueltas;i++){
+			for (int i=0; i<vueltas;i++) {
 				
 				//manda pedidos
-				for (int j=0; j<vueltas;j++){
-					//crear pedido
-					UUID id = ids.get(contador++);
-					int tipo = r.nextInt(maxT)+1;
-					int cant = r.nextInt(maxC)+1;
-					
-					//crear mensaje
-					NewOrderMessage msg = new NewOrderMessage(id, tipo, cant);
-					colaPedidos.send(msg);
-				}
+				UUID id = ids.get(i);
+				idsUSados.add(i, id);
 				
-				//consulta
-				OrderMessage mes = 
-						new OrderMessage(ids.get(r.nextInt(ids.size())));
+				int tipo = r.nextInt(maxT)+1;
+				int cant = r.nextInt(maxC)+1;
+				NewOrderMessage msg = new NewOrderMessage(id, tipo, cant);
+				colaPedidos.send(msg);
+			}
+			
+			//consulta
+			Collections.shuffle(idsUSados);
+			for (int i=0;i<vueltas;i++) {
+
+				OrderMessage mes = new OrderMessage(idsUSados.get(i));
 				colaQueries.send(mes);
 				System.out.println(
 						"Cliente envio consulta por ID: "+mes.getOrderId()+".");
 				
 			}		
-	
-			colaPedidos.disconnect();
-			colaQueries.disconnect();
-			System.out.println(
-			"Finalizada simulacion de clientes. Desconectado de las colas.");
+			
 			
 		} catch (NumberFormatException e) {
 			System.out.println("Parametro incorrecto.");
 		} catch (IOException e) {
 			System.out.println("Error al leer de archivo.");
-			e.printStackTrace();
 		} catch (ColaException e) {
 			System.out.println("Error de la cola de mensajes.");
-			e.printStackTrace();
+		} finally {
+			if (colaPedidos != null)
+				try {
+					colaPedidos.disconnect();
+				} catch (ColaException e) {
+					System.out.println("No se pudo desconectar de la cola de"
+							+ " pedidos.");
+				}
+			if (colaQueries != null)
+				try {
+					colaQueries.disconnect();
+				} catch (ColaException e) {
+					System.out.println("No se pudo desconectar de la cola de"
+							+ " queries.");
+				}
+			System.out.println(
+					"Finalizada simulacion de clientes. "
+					+ "Desconectado de las colas.");
 		}
 	}
 

@@ -18,10 +18,12 @@ public class OrderDeliverer implements QueueProcesser<OrderMessage>,
 
 			colaUpdate.connect();
 			colaUpdate.receive();
+			
 		} catch (IOException e) {
 			System.out.println("Error al leer de archivo.");
 		} catch (ColaException e) {
 			System.out.println("Error de la cola de mensajes.");
+		} finally {
 			if (colaUpdate != null) {
 				try {
 					colaUpdate.disconnect();

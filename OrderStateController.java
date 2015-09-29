@@ -18,10 +18,12 @@ public class OrderStateController implements QueueProcesser<OrderMessage>,
 
 			colaQueries.connect();
 			colaQueries.receive(); //lee de la cola: ID de la orden
+			
 		} catch (IOException e) {
 			System.out.println("Error al leer de archivo.");
 		} catch (ColaException e) {
 			System.out.println("Error de la cola de mensajes.");
+		} finally {
 			if (colaQueries != null) {
 				try {
 					colaQueries.disconnect();

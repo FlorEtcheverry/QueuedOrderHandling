@@ -21,10 +21,12 @@ public class Logger implements QueueProcesser<NewOrderMessage>,
 
 			colaLogging.connect();
 			colaLogging.receive();
+			
 		} catch (IOException e) {
 			System.out.println("Error al leer de archivo.");
 		} catch (ColaException e) {
 			System.out.println("Error de la cola de mensajes.");
+		} finally {
 			if (colaLogging != null) {
 				try {
 					colaLogging.disconnect();

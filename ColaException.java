@@ -1,6 +1,11 @@
 
 public class ColaException extends Exception {
 
+	public ColaException(Exception e) {
+		super(e);
+		// TODO Auto-generated constructor stub
+	}
+
 	/**
 	 * 
 	 */

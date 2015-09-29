@@ -17,7 +17,7 @@ public class Empleado implements QueueProcesser<OrderMessage>,
 		int time = Integer.parseInt(args[1]);
 		System.out.println(
 				"Iniciado un empleado. Va a consultar por "+vueltas+
-				" y dormirá "+time+"segundos.");
+				" y dormirá "+time+" segundos.");
 		
 		try {
 			//cargar ids
