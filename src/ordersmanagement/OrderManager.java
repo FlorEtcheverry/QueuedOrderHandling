@@ -20,22 +20,26 @@ public class OrderManager implements QueueProcesser<NewOrderMessage> {
 			//Leer el nuevo pedido
 			ConfigLoader conf = ConfigLoader.getInstance();
 			String pedidosQueue = conf.getOrdersQueueName();
+			String loggingQueue = conf.getLoggingQueueName();
+			String processingQueue = conf.getProcessingQueueName();
+			
 			OrderManager manager = new OrderManager();
+			
 			colaPedidos = 
 					new Queue<NewOrderMessage>(pedidosQueue, manager);
 			
-			String loggingQueue = conf.getLoggingQueueName();
 			colaNuevaOrden = 
 					new Queue<NewOrderMessage>(loggingQueue,manager);
 			
-			colaNuevaOrden.connect();
-			String processingQueue = conf.getProcessingQueueName();
 			colaProcesar = 
 					new Queue<NewOrderMessage>(processingQueue,manager);
 			
+			colaNuevaOrden.connect();
 			colaPedidos.connect();
 			colaProcesar.connect();
 			
+			System.out.println("ORDER MANAGER Iniciado. "
+					+ "Esperando nuevos pedidos.");
 			colaPedidos.receive();
 			
 		} catch (IOException e) {
@@ -59,9 +63,9 @@ public class OrderManager implements QueueProcesser<NewOrderMessage> {
 	public void process(NewOrderMessage message) throws IOException, 
 														ColaException {
 		
-		/*System.out.println("Orden nueva recibida: "+message.getID()+
-							" "+message.getTipo()+" "+message.getCantidad());
-		*/
+		System.out.println("Orden nueva recibida: "+message.getID()+
+							" "+message.getTipo()+" "+message.getCantidad()); //TODO
+		
 		
 		//pone el pedido en la cola de LOGGING		
 		colaNuevaOrden.send(message);

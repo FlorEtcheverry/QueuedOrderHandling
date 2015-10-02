@@ -11,9 +11,12 @@ import communication.QueueProcesser;
 
 public class OrderStateController implements QueueProcesser<OrderMessage> {
 
+	private static OrdersStorage ordenes;
+	
 	public static void main(String[] args) {
 		
 		Queue<OrderMessage> colaQueries = null;
+		ordenes = new OrdersStorage();
 		try {
 			ConfigLoader conf = ConfigLoader.getInstance();
 			String queryQueue = conf.getQueryStateQueueName();
@@ -23,6 +26,8 @@ public class OrderStateController implements QueueProcesser<OrderMessage> {
 								queryQueue, orderController);
 
 			colaQueries.connect();
+			System.out.println("ORDER STATE CONTROLLER Iniciado. "
+					+ "Esperando nuevas consultas.");
 			colaQueries.receive(); //lee de la cola: ID de la orden
 			
 		} catch (IOException e) {
@@ -49,7 +54,6 @@ public class OrderStateController implements QueueProcesser<OrderMessage> {
 		UUID idOrden = message.getOrderId();
 		
 		//se fija en el archivo de ordenes, para ese ID, el estado
-		OrdersStorage ordenes = new OrdersStorage();
 		char estado = ordenes.getOrderState(idOrden);
 		
 		//devuelve el estado al usuario

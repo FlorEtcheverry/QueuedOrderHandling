@@ -33,7 +33,6 @@ public class Queue <TMessage extends Message> {
 		try {
 			ConfigLoader conf = ConfigLoader.getInstance();
 			ConnectionFactory factory = new ConnectionFactory();
-			factory.setConnectionTimeout(9000);
 			factory.setHost(conf.getHost());
 			
 			connection = factory.newConnection();
@@ -64,7 +63,9 @@ public class Queue <TMessage extends Message> {
 		    		byte[] body
 		    		) throws IOException {
 		    	
+		    	System.out.println("BYTES LEIDOOOOOOS------------"); //TODO
 		    	TMessage msj_recibido = Message.fromBytes(body); //TODO no se rompe?
+		    	System.out.println("MSJ RECIBIDO: "+msj_recibido.toString()); //TODO
 		    	try {
 		    		reciever.process(msj_recibido);
 	    		} catch (ColaException e) {
@@ -74,12 +75,14 @@ public class Queue <TMessage extends Message> {
 				} finally {
 	    			//ack de msj procesado
 	    			channel.basicAck(envelope.getDeliveryTag(), false);
+	    			System.out.println("ACK MANDADOOO------------"); //TODO
 	    		}
 		    }
 	    };
 	    //lee pedido de la cola
 	    try {
 	    	//queue,autoACK,consumer
+	    	System.out.println("POR LEER MENSAJE-----------"); //TODO
 			channel.basicConsume(queueName, false, consumer);
 		}
 	    catch (IOException e) {
