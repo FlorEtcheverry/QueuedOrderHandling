@@ -12,21 +12,44 @@ import communication.Queue;
 import communication.QueueProcesser;
 
 public class Logger implements QueueProcesser<NewOrderMessage> {
+	
+	private Queue<NewOrderMessage> colaLogging;
+	
+	private static class Quitter implements Runnable {
+		
+		private Queue<NewOrderMessage> colaLogging;	
+
+		public Quitter(Queue<NewOrderMessage> colaLogging) {
+			this.colaLogging = colaLogging;
+		}
+		
+		@Override
+		public void run(){
+			if (colaLogging != null) {
+				try {
+					colaLogging.disconnect();
+				} catch (ColaException e1) {
+					System.out.println("	LOGGER - "
+							+ "Error al desconectar cola de mensajes");
+				}
+			}
+			System.out.println("Logger cerrado correctamente.");
+		}
+	}
 
 	public static void main(String[] args) {
 
-		Queue<NewOrderMessage> colaLogging = null;
+		Logger logger = new Logger();
 		try {
 			//lee de la cola msj de pedido
 			ConfigLoader conf = ConfigLoader.getInstance();
 			String loggingQueue = conf.getLoggingQueueName();
 			
-			Logger logger = new Logger();
-			colaLogging = 
+			logger.colaLogging = 
 					new Queue<NewOrderMessage>(loggingQueue, logger);
 
-			colaLogging.connect();
-			colaLogging.receive();
+			logger.colaLogging.connect();
+			logger.colaLogging.receive();
 			
 		} catch (IOException e) {
 			System.out.println("	LOGGER - Error al leer de archivo.");
@@ -42,6 +65,8 @@ public class Logger implements QueueProcesser<NewOrderMessage> {
 				}
 			}
 		}*/
+		Runtime.getRuntime().addShutdownHook(new Thread(
+				new Quitter(logger.colaLogging))); 
 	}
 
 	@Override

@@ -63,7 +63,7 @@ public class Queue <TMessage extends Message> {
 		    		byte[] body
 		    		) throws IOException {
 		    	
-		    	TMessage msj_recibido = Message.fromBytes(body); //TODO no se rompe?
+		    	TMessage msj_recibido = Message.fromBytes(body);
 		    	try {
 		    		reciever.process(msj_recibido);
 	    		} catch (ColaException e) {

@@ -1,17 +1,19 @@
 package ordersmanagement;
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
-import java.util.HashMap;
 import java.util.UUID;
 
+import common.Archivo;
 import common.ConfigLoader;
+import common.Storage;
 
-
-public class OrdersStorage {
+public class OrdersStorage extends Storage {
 	
+	public OrdersStorage() {
+		super();
+	}
+	/*
 	private class Archivo {
 		public RandomAccessFile randomFile;
 		public FileChannel channel;
@@ -53,14 +55,19 @@ public class OrdersStorage {
 			archivo.channel.close();
 			archivo.randomFile.close();
 		}
+	}*/
+	
+	private Archivo init(UUID id) throws IOException {
+		ConfigLoader conf = ConfigLoader.getInstance();
+		String pathStr = conf.getOrdersPath(id.toString().substring(0, 1));
+		return getArchivo(pathStr);
 	}
 
 	public void saveNewOrder(UUID id,char estado) throws IOException {
 				
-		FileLock lock = null;
-		Archivo archivo = getArchivo(id);
-		RandomAccessFile file = archivo.randomFile;
-		lock = archivo.channel.lock();
+		Archivo archivo = init(id);
+		RandomAccessFile file = archivo.getRandomFile();
+		FileLock lock = archivo.getChannel().lock();
 		int lineLength = id.toString().length()+2;
 		byte[] orden = new byte[lineLength];
 		orden = (id.toString()+"|"+String.valueOf(estado)).getBytes();
@@ -74,13 +81,13 @@ public class OrdersStorage {
 	
 	public void changeOrderState(UUID id,char estado) throws IOException {
 		
-		FileLock lock = null;
-		Archivo archivo = getArchivo(id);
-		RandomAccessFile file = archivo.randomFile;
-		lock = archivo.channel.lock();
+		Archivo archivo = init(id);
+		RandomAccessFile file = archivo.getRandomFile();
+		FileLock lock = archivo.getChannel().lock();
 		int lineLength = id.toString().length()+2;
 		byte[] orden = new byte[lineLength];
 		boolean encontrado = false;
+		file.seek(0);
 		try {
 			while ((file.getFilePointer() <= file.length()) && !encontrado) {
 				int res = file.read(orden);
@@ -105,12 +112,12 @@ public class OrdersStorage {
 	
 	public char getOrderState(UUID id) throws IOException{
 		
-		FileLock lock = null;
-		Archivo archivo = getArchivo(id);
-		RandomAccessFile file = archivo.randomFile;
-		lock = archivo.channel.lock();
+		Archivo archivo = init(id);
+		RandomAccessFile file = archivo.getRandomFile();
+		FileLock lock = archivo.getChannel().lock();
 		int lineLength = id.toString().length()+2;
 		byte[] orden = new byte[lineLength];
+		file.seek(0);
 		try {
 			while ((file.getFilePointer() <= file.length())) {
 				int res = file.read(orden);

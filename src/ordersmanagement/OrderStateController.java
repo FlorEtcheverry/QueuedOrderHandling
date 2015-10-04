@@ -8,10 +8,41 @@ import communication.OrderMessage;
 import communication.Queue;
 import communication.QueueProcesser;
 
-
 public class OrderStateController implements QueueProcesser<OrderMessage> {
 
 	private OrdersStorage ordenes;
+	
+	private static class Quitter implements Runnable {
+			
+			private Queue<OrderMessage> colaQueries;
+			private OrdersStorage ordenes;		
+	
+			public Quitter(
+					Queue<OrderMessage> colaQueries, 
+					OrdersStorage ordenes) 
+			{
+				this.colaQueries=colaQueries;
+				this.ordenes=ordenes;
+			}
+			
+			@Override
+			public void run(){
+				if (colaQueries != null) {
+					try {
+						colaQueries.disconnect();
+					} catch (ColaException e1) {
+						System.out.println("			ORDER STATE CONTROLLER"
+								+ " - Error al desconectar cola de mensajes");
+					}
+				}
+				try {
+					ordenes.close();
+				} catch (IOException e) {
+					System.out.println("			ORDER STATE CONTROLLER - "
+							+ "Error al cerrar archivos de ordenes");
+				}
+			}
+		}
 	
 	public static void main(String[] args) {
 		
@@ -47,6 +78,9 @@ public class OrderStateController implements QueueProcesser<OrderMessage> {
 				}
 			}
 		} */
+		Runtime.getRuntime().addShutdownHook(
+				new Thread(new Quitter(colaQueries,orderController.ordenes))
+				); 
 	}
 
 	@Override

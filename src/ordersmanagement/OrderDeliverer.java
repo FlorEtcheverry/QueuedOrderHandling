@@ -8,26 +8,56 @@ import communication.OrderMessage;
 import communication.Queue;
 import communication.QueueProcesser;
 
-
 public class OrderDeliverer implements QueueProcesser<OrderMessage> {
 
+	private Queue<OrderMessage> colaUpdate;
 	private OrdersStorage ordenes;
+	
+	private static class Quitter implements Runnable {
+		
+		private Queue<OrderMessage> colaUpdate;
+		private OrdersStorage ordenes;		
+
+		public Quitter(
+				Queue<OrderMessage> colaUpdate,
+				OrdersStorage ordenes) 
+		{
+			this.colaUpdate = colaUpdate;
+			this.ordenes = ordenes;
+		}
+		
+		@Override
+		public void run(){
+			if (colaUpdate != null) {
+				try {
+					colaUpdate.disconnect();
+				} catch (ColaException e1) {
+					System.out.println("				ORDER DELIVERER - "
+							+ "Error al desconectar cola de mensajes");
+				}
+			}
+			try {
+				ordenes.close();
+			} catch (IOException e) {
+				System.out.println("			ORDER DELIVERER - "
+						+ "Error al cerrar archivos de ordenes");
+			}
+		}
+	}
 	
 	public static void main(String[] args) {
 		
-		Queue<OrderMessage> colaUpdate = null;
 		OrderDeliverer orderDeliverer = new OrderDeliverer();
 		orderDeliverer.ordenes = new OrdersStorage();
 		try {
 			ConfigLoader conf = ConfigLoader.getInstance();
 			String changeStateQueue = conf.getUpdateStateQueueName();
 			
-			colaUpdate = new Queue<OrderMessage>(
+			orderDeliverer.colaUpdate = new Queue<OrderMessage>(
 							changeStateQueue, orderDeliverer);
 
-			colaUpdate.connect();
-			colaUpdate.receive();
-			
+			orderDeliverer.colaUpdate.connect();
+			orderDeliverer.colaUpdate.receive();
 		} catch (IOException e) {
 			System.out.println("				ORDER DELIVERER - "
 					+ "Error al leer de archivo.");
@@ -44,6 +74,11 @@ public class OrderDeliverer implements QueueProcesser<OrderMessage> {
 				}
 			}
 		}*/
+		Runtime.getRuntime().addShutdownHook(new Thread(
+				new Quitter(
+						orderDeliverer.colaUpdate,
+						orderDeliverer.ordenes
+						))); 
 	}
 
 	@Override

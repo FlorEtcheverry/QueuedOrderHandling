@@ -1,5 +1,4 @@
 package stockmanagement;
-
 import java.io.IOException;
 
 import common.ConfigLoader;
@@ -9,16 +8,57 @@ import communication.Queue;
 import communication.QueueProcesser;
 import ordersmanagement.OrdersStorage;
 
-
 public class StockController implements QueueProcesser<NewOrderMessage> {
 
+	private Queue<NewOrderMessage> colaProcessing;
 	private StockStorage stock;
 	private OrdersStorage orders;
 	
+	private static class Quitter implements Runnable {
+		
+		private Queue<NewOrderMessage> colaProcessing;
+		private StockStorage stock;
+		private OrdersStorage orders;		
+
+		public Quitter(
+				Queue<NewOrderMessage> colaProcessing,
+				StockStorage stock,
+				OrdersStorage orders) 
+		{
+			this.colaProcessing = colaProcessing;
+			this.stock = stock;
+			this.orders = orders;
+		}
+		
+		@Override
+		public void run(){
+			if (colaProcessing != null) {
+				try {
+					colaProcessing.disconnect();
+				} catch (ColaException e1) {
+					System.out.println("		STOCK CONTROLLER - "
+							+ "Error al desconectar cola de mensajes");
+				}
+			}
+			try {
+				orders.close();
+			} catch (IOException e) {
+				System.out.println("			STOCK CONTROLLER - "
+						+ "Error al cerrar archivos de ordenes");
+			}
+			try {
+				stock.close();
+			} catch (IOException e) {
+				System.out.println("			STOCK CONTROLLER - "
+						+ "Error al cerrar archivos de stock");
+			}
+			System.out.println("Stock controller cerrado correctamente.");
+		}
+	}
+	
 	public static void main(String[] args) {
 		//lee de la cola pedido: ID + TIPO + CANTIDAD
-		
-		Queue<NewOrderMessage> colaProcessing = null;
+
 		StockController stockController = new StockController();
 		stockController.stock = new StockStorage();
 		stockController.orders = new OrdersStorage();
@@ -27,11 +67,11 @@ public class StockController implements QueueProcesser<NewOrderMessage> {
 			ConfigLoader conf = ConfigLoader.getInstance();
 			String processingQueue = conf.getProcessingQueueName();
 			
-			colaProcessing = new Queue<NewOrderMessage>(
+			stockController.colaProcessing = new Queue<NewOrderMessage>(
 							processingQueue,stockController);
 			
-			colaProcessing.connect();
-			colaProcessing.receive();
+			stockController.colaProcessing.connect();
+			stockController.colaProcessing.receive();
 			
 		} catch (IOException e) {
 			System.out.println("		STOCK CONTROLLER - "
@@ -49,7 +89,12 @@ public class StockController implements QueueProcesser<NewOrderMessage> {
 				}
 			}
 		} */
-
+		Runtime.getRuntime().addShutdownHook(new Thread(
+				new Quitter(
+						stockController.colaProcessing,
+						stockController.stock,
+						stockController.orders
+						))); 
 	}
 
 	@Override
@@ -69,7 +114,5 @@ public class StockController implements QueueProcesser<NewOrderMessage> {
 			System.out.println("Cambiado el estado de orden "+
 											message.getID()+" a rechazada.");
 		}
-		
 	}
-
 }
