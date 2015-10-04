@@ -13,6 +13,7 @@ public class UUIDsGenerator {
 	public static void main(String[] args) {
 
 		int cant = Integer.parseInt(args[0]);
+		System.out.println("Se generarán "+cant+" IDs.");
 
 		try {
 			File file = new File(ConfigLoader.getInstance().getIDsFile());
@@ -34,5 +35,4 @@ public class UUIDsGenerator {
 		System.out.println("GENERADOR DE IDS - "
 				+ "Finalizada la creacion de random IDs.");
 	}
-
 }

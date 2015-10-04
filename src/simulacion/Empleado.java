@@ -24,7 +24,7 @@ public class Empleado implements QueueProcesser<OrderMessage> {
 		int time = Integer.parseInt(args[1]);
 		System.out.println(
 				"Iniciado un EMPLEADO. Va a consultar por "+vueltas+
-				" y dormirá "+time+" segundos.");
+				" y dormirá "+time+" milisegundos.");
 		
 		try {
 			//cargar ids
@@ -56,7 +56,7 @@ public class Empleado implements QueueProcesser<OrderMessage> {
 			
 			colaEntregar.disconnect();
 			System.out.println(
-					"Finalizado un empleado. Desconectado de la cola");
+					"Finalizado un empleado. Desconectado de la cola.");
 			
 		} catch (NumberFormatException e) {
 			System.out.println("							EMPLEADO - "

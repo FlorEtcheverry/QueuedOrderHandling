@@ -13,14 +13,14 @@ if [ $# -eq 0 ];
 then echo "
 	# 1:loops from client
 	# 2:sleep for client (millis)
-	# 2:number of OrderManagers 
-	# 3:number of StockControllers 
-	# 4:number of StateControllers 
-	# 5:number of OrderDeliverers 
-	# 6:number of StockSuppliers 
-	# 7:loops from empleado 
-	# 8:sleep for empleado (millis)
-	# 9:cant de ids a generar"
+	# 3:number of OrderManagers 
+	# 4:number of StockControllers 
+	# 5:number of StateControllers 
+	# 6:number of OrderDeliverers 
+	# 7:number of StockSuppliers 
+	# 8:loops from empleado 
+	# 9:sleep for empleado (millis)
+	#10:cant de ids a generar"
 	exit
 fi
 

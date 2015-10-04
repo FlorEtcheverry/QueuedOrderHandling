@@ -39,9 +39,10 @@ public class OrderDeliverer implements QueueProcesser<OrderMessage> {
 			try {
 				ordenes.close();
 			} catch (IOException e) {
-				System.out.println("			ORDER DELIVERER - "
+				System.out.println("				ORDER DELIVERER - "
 						+ "Error al cerrar archivos de ordenes");
 			}
+			System.out.println("Order Deliverer cerrado correctamente.");
 		}
 	}
 	

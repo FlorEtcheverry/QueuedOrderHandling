@@ -41,6 +41,8 @@ public class OrderStateController implements QueueProcesser<OrderMessage> {
 					System.out.println("			ORDER STATE CONTROLLER - "
 							+ "Error al cerrar archivos de ordenes");
 				}
+				System.out.println("Order State Controller "
+									+ "cerrado correctamente.");
 			}
 		}
 	

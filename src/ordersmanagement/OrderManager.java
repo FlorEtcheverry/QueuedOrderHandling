@@ -52,9 +52,10 @@ public class OrderManager implements QueueProcesser<NewOrderMessage> {
 			try {
 				ordenes.close();
 			} catch (IOException e) {
-				System.out.println("			ORDER MANAGER - "
+				System.out.println("ORDER MANAGER - "
 						+ "Error al cerrar archivos de ordenes");
 			}
+			System.out.println("Order Manager cerrado correctamente.");
 		}
 	}
 

@@ -45,6 +45,7 @@ public class Cliente implements QueueProcesser<NewOrderMessage> {
 			
 			Random r = new Random();
 			int vueltas = Integer.parseInt(args[0]);
+			long time = Long.parseLong(args[1]);
 			int maxT = conf.getMaxTipo();
 			int maxC = conf.getMaxStock();
 			
@@ -53,7 +54,8 @@ public class Cliente implements QueueProcesser<NewOrderMessage> {
 
 			System.out.println(
 					"Iniciado CLIENTE. Creara "+vueltas+" de nuevas ordenes. "
-					+ "Luego consultará por el estado de esas ordenes.");
+							+ "Luego dormirá "+time
+							+"consultará por el estado de esas ordenes.");
 			ArrayList<UUID> idsUsados = new ArrayList<UUID>();
 			
 			for (int i=0; i<vueltas;i++) {
@@ -67,7 +69,7 @@ public class Cliente implements QueueProcesser<NewOrderMessage> {
 				NewOrderMessage msg = new NewOrderMessage(id, tipo, cant);
 				colaPedidos.send(msg);
 			}
-			Thread.sleep(Long.parseLong(args[1]));
+			Thread.sleep(time);
 			
 			//consulta 
 			Collections.shuffle(idsUsados);
