@@ -23,7 +23,7 @@ public class UUIDsGenerator {
 			}
 			BufferedWriter writer = 
 							new BufferedWriter(new FileWriter(file, false));
-			for (int i=0;i<=cant;i++) {
+			for (int i=0;i<cant;i++) {
 				writer.write(UUID.randomUUID().toString());
 				writer.newLine();
 			}
