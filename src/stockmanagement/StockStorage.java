@@ -35,8 +35,8 @@ public class StockStorage {
 			channel = file.getChannel();
 			lock = channel.lock();
 			
+			file.seek(0);
 			if (!existed) {
-				file.seek(0);
 				file.writeInt(ConfigLoader.getInstance().getMaxStock());
 				file.seek(0);
 			}
@@ -75,8 +75,8 @@ public class StockStorage {
 			channel = file.getChannel();
 			lock = channel.lock();
 			
+			file.seek(0);
 			if (!existed) {
-				file.seek(0);
 				file.writeInt(ConfigLoader.getInstance().getMaxStock());
 				file.seek(0);
 			}

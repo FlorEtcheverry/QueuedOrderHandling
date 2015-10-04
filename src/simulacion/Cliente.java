@@ -67,7 +67,6 @@ public class Cliente implements QueueProcesser<NewOrderMessage> {
 				NewOrderMessage msg = new NewOrderMessage(id, tipo, cant);
 				colaPedidos.send(msg);
 			}
-			//TODO PONERLE SLEEP
 			Thread.sleep(Long.parseLong(args[1]));
 			
 			//consulta 
