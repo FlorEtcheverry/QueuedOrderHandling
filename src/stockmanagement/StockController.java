@@ -2,12 +2,12 @@ package stockmanagement;
 
 import java.io.IOException;
 
-import ordersmanagement.OrdersStorage;
 import common.ConfigLoader;
 import communication.ColaException;
 import communication.NewOrderMessage;
 import communication.Queue;
 import communication.QueueProcesser;
+import ordersmanagement.OrdersStorage;
 
 
 public class StockController implements QueueProcesser<NewOrderMessage> {

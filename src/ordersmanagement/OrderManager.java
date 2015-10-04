@@ -7,7 +7,6 @@ import communication.NewOrderMessage;
 import communication.Queue;
 import communication.QueueProcesser;
 
-
 public class OrderManager implements QueueProcesser<NewOrderMessage> {
 	
 	private Queue<NewOrderMessage> colaNuevaOrden;

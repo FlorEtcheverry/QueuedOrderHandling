@@ -59,8 +59,11 @@ public class StockStorage {
 	public void sumarStock(int tipo, int cant) throws IOException {
 		//suma el stock del archivo de ese TIPO y escribe el nuevo stock
 		
-		String pathStr = String.valueOf(tipo)+".stock";
+		ConfigLoader conf = ConfigLoader.getInstance();
+		String pathStr = conf.getStockPath(String.valueOf(tipo));
 		File arch = new File(pathStr);
+		arch.getParentFile().mkdirs();
+		
 		boolean existed = true;
 		if (!arch.exists()) {
 			existed = false;
@@ -85,7 +88,8 @@ public class StockStorage {
 			int nuevo = leido+cant;
 			file.seek(0);
 			file.writeInt(nuevo);
-			System.out.println("Stock sumado. Nuevo stock: "+nuevo);
+			System.out.println("Stock sumado para producto "+tipo+
+											". Nuevo stock: "+nuevo);
 			
 		} finally {
 			if (lock != null) lock.release();

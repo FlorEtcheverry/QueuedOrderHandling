@@ -9,6 +9,7 @@ import communication.QueueProcesser;
 import communication.StockMessage;
 
 
+
 public class StockSupplier implements QueueProcesser<StockMessage> {
 
 	private StockStorage stock;
