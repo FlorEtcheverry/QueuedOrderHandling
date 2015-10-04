@@ -11,7 +11,7 @@ import common.ConfigLoader;
 
 public class StockStorage {
 
-	public boolean restarStock(int tipo,int cant) throws IOException {
+	public boolean restarStock(int tipo,int cant) throws IOException { //TODO sacar repetido!
 		//se fija para ese TIPO, el stock en el archivo
 		//si alcanza para su CANTIDAD
 		//resta el stock de archivo y devuelve true. Sino, false.
@@ -46,6 +46,7 @@ public class StockStorage {
 			if (nuevo < 0) return false;
 			file.seek(0);
 			file.writeInt(nuevo);
+			System.out.println("Nuevo stock de producto "+tipo+": "+nuevo);
 			
 		} finally {
 			if (lock != null) lock.release();

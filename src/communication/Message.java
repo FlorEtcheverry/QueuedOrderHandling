@@ -29,6 +29,7 @@ public abstract class Message implements Serializable {
         return bytes;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static
 	<TMessage extends Message> TMessage fromBytes(byte[] body) 
 			throws IOException {

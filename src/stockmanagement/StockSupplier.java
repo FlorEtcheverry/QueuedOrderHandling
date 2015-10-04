@@ -11,17 +11,20 @@ import communication.StockMessage;
 
 public class StockSupplier implements QueueProcesser<StockMessage> {
 
+	private StockStorage stock;
+	
 	public static void main(String[] args) {
 
 		Queue<StockMessage> colaStock = null;
+		StockSupplier stockSup = new StockSupplier();
+		stockSup.stock = new StockStorage();
 		try {
 			//lee msj de TIPO y CANT de stock
 			
 			//conectarse a la cola
 			ConfigLoader conf = ConfigLoader.getInstance();
 			String stockQueue = conf.getAddStockQueueName();
-
-			StockSupplier stockSup = new StockSupplier();
+;
 			colaStock = new Queue<StockMessage>(stockQueue,stockSup);
 			
 			colaStock.connect();
@@ -33,7 +36,7 @@ public class StockSupplier implements QueueProcesser<StockMessage> {
 		} catch (ColaException e) {
 			System.out.println("					STOCK SUPPLIER - "
 					+ "Error de la cola de mensajes.");
-		} finally {
+		} /*finally { FIXME
 			if (colaStock != null) {
 				try {
 					colaStock.disconnect();
@@ -42,15 +45,14 @@ public class StockSupplier implements QueueProcesser<StockMessage> {
 							+ "Error al desconectar cola de mensajes");
 				}
 			}
-		}
+		} */
 	}
 
 	@Override
 	public void process(StockMessage message) throws IOException {
 		int tipo = message.getTipo();
 		int cant = message.getCantidad();
-		
-		StockStorage stock = new StockStorage();
+
 		stock.sumarStock(tipo,cant);
 		
 	}

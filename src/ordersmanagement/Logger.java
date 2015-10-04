@@ -32,7 +32,7 @@ public class Logger implements QueueProcesser<NewOrderMessage> {
 			System.out.println("	LOGGER - Error al leer de archivo.");
 		} catch (ColaException e) {
 			System.out.println("	LOGGER - Error de la cola de mensajes.");
-		} finally {
+		} /*finally { FIXME
 			if (colaLogging != null) {
 				try {
 					colaLogging.disconnect();
@@ -41,8 +41,7 @@ public class Logger implements QueueProcesser<NewOrderMessage> {
 							+ "Error al desconectar cola de mensajes");
 				}
 			}
-		}
-
+		}*/
 	}
 
 	@Override

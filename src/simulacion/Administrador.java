@@ -16,6 +16,7 @@ public class Administrador implements QueueProcesser<StockMessage> {
 		if (args.length != 2) {
 			System.out.println(
 					"Error, parametros: tipo prod, stock a agregar.");
+			System.exit(0);
 		}
 		//para un TIPO de producto, aumenta en una CANTIDAD determin el stock
 		
@@ -38,12 +39,12 @@ public class Administrador implements QueueProcesser<StockMessage> {
 			//manda el msj: TIPO + CANTIDAD (a agregar)
 			colaAgregarStock.send(msg);
 			System.out.println(
-					"ADMINISTRADOR envio msj de aumentar stock de tipo "+tipo+
+					"ADMINISTRADOR Envio msj de aumentar stock de tipo "+tipo+
 					" en "+cant+" unidades.");
 			
 			colaAgregarStock.disconnect();
 			System.out.println(
-					"ADMINISTRADOR finalizado. Desconectado de la cola");
+					"ADMINISTRADOR finalizado. Desconectado de la cola.");
 			
 		} catch (NumberFormatException e) {
 			System.out.println("ADMINISTRADOR - Parametro incorrecto.");

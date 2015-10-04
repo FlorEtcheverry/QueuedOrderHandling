@@ -8,7 +8,50 @@ import java.util.UUID;
 
 import common.ConfigLoader;
 
-public class OrdersStorage {
+public class OrdersStorage { //TODO no abrir y cerrar todo por llamada
+	/*
+	private class Archivo {
+		public RandomAccessFile randomFile;
+		public FileChannel channel;
+	}
+	
+	private HashMap<String, Archivo> openedFiles;
+
+	public OrdersStorage() {
+		
+		openedFiles = 
+				new HashMap<String, OrdersStorage.Archivo>();
+		
+	}
+	
+	private Archivo getChannel(UUID id) throws IOException {
+		
+		ConfigLoader conf = ConfigLoader.getInstance();
+		String pathStr = conf.getOrdersPath(id.toString().substring(0, 1));
+		
+		if (!openedFiles.containsKey(pathStr)) {
+			
+			File arch = new File(pathStr);
+			arch.getParentFile().mkdirs();
+			if (!arch.exists()) {
+				arch.createNewFile();
+			}
+
+			Archivo archivo = new Archivo();
+			archivo.randomFile = new RandomAccessFile(arch, "rw");
+			archivo.channel = archivo.randomFile.getChannel();
+			
+			openedFiles.put(pathStr, archivo);
+		} else {
+			
+		}
+		
+		
+	}
+	
+	public void close() {
+		
+	}*/
 
 	public void saveNewOrder(UUID id,char estado) throws IOException {
 		
@@ -44,7 +87,8 @@ public class OrdersStorage {
 	
 	public void changeOrderState(UUID id,char estado) throws IOException {
 		
-		String pathStr = (id.toString().substring(0, 1));
+		ConfigLoader conf = ConfigLoader.getInstance();
+		String pathStr = conf.getOrdersPath(id.toString().substring(0, 1));
 		File arch = new File(pathStr);
 		arch.getParentFile().mkdirs();
 		if (!arch.exists()) {
@@ -85,7 +129,8 @@ public class OrdersStorage {
 	
 	public char getOrderState(UUID id) throws IOException{
 		
-		String pathStr = (id.toString().substring(0, 1));
+		ConfigLoader conf = ConfigLoader.getInstance();
+		String pathStr = conf.getOrdersPath(id.toString().substring(0, 1));
 		File arch = new File(pathStr);
 		arch.getParentFile().mkdirs();
 		if (!arch.exists()) {

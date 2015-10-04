@@ -12,15 +12,21 @@ import communication.QueueProcesser;
 
 public class StockController implements QueueProcesser<NewOrderMessage> {
 
+	private StockStorage stock;
+	private OrdersStorage orders;
+	
 	public static void main(String[] args) {
 		//lee de la cola pedido: ID + TIPO + CANTIDAD
 		
 		Queue<NewOrderMessage> colaProcessing = null;
+		StockController stockController = new StockController();
+		stockController.stock = new StockStorage();
+		stockController.orders = new OrdersStorage();
+		
 		try {
 			ConfigLoader conf = ConfigLoader.getInstance();
 			String processingQueue = conf.getProcessingQueueName();
-
-			StockController stockController = new StockController();
+			
 			colaProcessing = new Queue<NewOrderMessage>(
 							processingQueue,stockController);
 			
@@ -33,7 +39,7 @@ public class StockController implements QueueProcesser<NewOrderMessage> {
 		} catch (ColaException e) {
 			System.out.println("		STOCK CONTROLLER - "
 					+ "Error de la cola de mensajes.");
-		} finally {
+		} /*finally { FIXME
 			if (colaProcessing != null) {
 				try {
 					colaProcessing.disconnect();
@@ -42,7 +48,7 @@ public class StockController implements QueueProcesser<NewOrderMessage> {
 							+ "Error al desconectar cola de mensajes");
 				}
 			}
-		}
+		} */
 
 	}
 
@@ -50,9 +56,6 @@ public class StockController implements QueueProcesser<NewOrderMessage> {
 	public void process(NewOrderMessage message) throws IOException {
 		int tipo = message.getTipo();
 		int cant = message.getCantidad();
-		
-		StockStorage stock = new StockStorage();
-		OrdersStorage orders = new OrdersStorage();
 		
 		boolean restado = stock.restarStock(tipo,cant);
 		if (restado) {

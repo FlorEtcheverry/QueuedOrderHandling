@@ -10,11 +10,13 @@ import communication.QueueProcesser;
 
 public class OrderManager implements QueueProcesser<NewOrderMessage> {
 	
-	private static Queue<NewOrderMessage> colaNuevaOrden;
-	private static Queue<NewOrderMessage> colaProcesar;
-	private static Queue<NewOrderMessage> colaPedidos;
+	private Queue<NewOrderMessage> colaNuevaOrden;
+	private Queue<NewOrderMessage> colaProcesar;
+	private Queue<NewOrderMessage> colaPedidos;
 
 	public static void main(String[] args) {
+		
+		OrderManager manager = new OrderManager();
 		
 		try {
 			//Leer el nuevo pedido
@@ -23,49 +25,51 @@ public class OrderManager implements QueueProcesser<NewOrderMessage> {
 			String loggingQueue = conf.getLoggingQueueName();
 			String processingQueue = conf.getProcessingQueueName();
 			
-			OrderManager manager = new OrderManager();
-			
-			colaPedidos = 
+			manager.colaPedidos = 
 					new Queue<NewOrderMessage>(pedidosQueue, manager);
 			
-			colaNuevaOrden = 
+			manager.colaNuevaOrden = 
 					new Queue<NewOrderMessage>(loggingQueue,manager);
 			
-			colaProcesar = 
+			manager.colaProcesar = 
 					new Queue<NewOrderMessage>(processingQueue,manager);
 			
-			colaNuevaOrden.connect();
-			colaPedidos.connect();
-			colaProcesar.connect();
+			manager.colaNuevaOrden.connect();
+			manager.colaPedidos.connect();
+			manager.colaProcesar.connect();
 			
 			System.out.println("ORDER MANAGER Iniciado. "
 					+ "Esperando nuevos pedidos.");
-			colaPedidos.receive();
+			manager.colaPedidos.receive();
 			
 		} catch (IOException e) {
 			System.out.println("ORDER MANAGER - Error al leer de archivo.");
 		} catch (ColaException e) {
 			System.out.println("ORDER MANAGER - Error de la cola de mensajes.");
-		} finally {
+		} /*finally {
 			try {
-				if (colaPedidos != null) colaPedidos.disconnect();
-				if (colaNuevaOrden != null) colaNuevaOrden.disconnect();
-				if (colaProcesar != null) colaProcesar.disconnect();
+				if (manager.colaPedidos != null) {
+					manager.colaPedidos.disconnect();
+				}
+				if (manager.colaNuevaOrden != null) {
+					manager.colaNuevaOrden.disconnect();
+				}
+				if (manager.colaProcesar != null) {
+					manager.colaProcesar.disconnect();
+				}
 			} catch (ColaException e1) {
 				System.out.println("ORDER MANAGER - "
 						+ "Error al desconectar colas de mensajes");
 			}
-		}
+		} */ //FIXME
 	}
-	
 	
 	@Override
 	public void process(NewOrderMessage message) throws IOException, 
 														ColaException {
 		
-		System.out.println("Orden nueva recibida: "+message.getID()+
-							" "+message.getTipo()+" "+message.getCantidad()); //TODO
-		
+		/*System.out.println("Orden nueva recibida: "+message.getID()+
+							" "+message.getTipo()+" "+message.getCantidad());*/
 		
 		//pone el pedido en la cola de LOGGING		
 		colaNuevaOrden.send(message);
