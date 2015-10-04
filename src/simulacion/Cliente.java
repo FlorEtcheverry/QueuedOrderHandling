@@ -18,8 +18,9 @@ public class Cliente implements QueueProcesser<NewOrderMessage> {
 
 	public static void main(String[] args) {
 		
-		if (args.length != 1) {
-			System.out.println("Error, parametro: cantidad de ciclos.");
+		if (args.length != 2) {
+			System.out.println("Error, parametros: cantidad de ciclos y sleep");
+			System.exit(0);
 		}
 
 		Queue<NewOrderMessage> colaPedidos = null;
@@ -66,15 +67,17 @@ public class Cliente implements QueueProcesser<NewOrderMessage> {
 				NewOrderMessage msg = new NewOrderMessage(id, tipo, cant);
 				colaPedidos.send(msg);
 			}
+			//TODO PONERLE SLEEP
+			Thread.sleep(Long.parseLong(args[1]));
 			
-			//consulta
+			//consulta 
 			Collections.shuffle(idsUsados);
 			for (int i=0;i<vueltas;i++) {
 
 				OrderMessage mes = new OrderMessage(idsUsados.get(i));
 				colaQueries.send(mes);
-				System.out.println(
-						"CLIENTE envio consulta por ID: "+mes.getOrderId()+".");
+				/*System.out.println(
+					"CLIENTE envio consulta por ID: "+mes.getOrderId()+".");*/
 			}
 			
 			
@@ -87,6 +90,9 @@ public class Cliente implements QueueProcesser<NewOrderMessage> {
 		} catch (ColaException e) {
 			System.out.println("						CLIENTE - "
 					+ "Error de la cola de mensajes.");
+		} catch (InterruptedException e) {
+			System.out.println("						CLIENTE - "
+					+ "Error en el sleep - Interrupted.");
 		} finally {
 			if (colaPedidos != null)
 				try {

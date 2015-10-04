@@ -58,9 +58,7 @@ public class OrderStateController implements QueueProcesser<OrderMessage> {
 		char estado = ordenes.getOrderState(idOrden);
 		
 		//devuelve el estado al usuario
-		System.out.println("Para el ID: "+idOrden+". El estado es: "+estado);
-		System.out.println();
-		
+		System.out.println("Para el ID: "+idOrden+". El estado es: "+estado);		
 	}
 
 }

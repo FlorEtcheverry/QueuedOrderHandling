@@ -55,7 +55,8 @@ public class OrderDeliverer implements QueueProcesser<OrderMessage> {
 		//cambia el estado de "aceptada" a "entregada"
 		char estado = ordenes.getOrderState(id);
 		if (estado == ConfigLoader.ACEPTADA) {
-			ordenes.saveNewOrder(id, estado);
+			ordenes.changeOrderState(id, ConfigLoader.ENTREGADA);
+			System.out.println("La orden "+id.toString()+" fue ENTREGADA.");
 		} else {
 			//el ID no es válido
 			System.out.println("NO se puede aceptar la orden con ID "+
