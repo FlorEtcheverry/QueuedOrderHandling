@@ -93,10 +93,12 @@ public class OrderDeliverer implements QueueProcesser<OrderMessage> {
 		if (estado == ConfigLoader.ACEPTADA) {
 			ordenes.changeOrderState(id, ConfigLoader.ENTREGADA);
 			System.out.println("La orden "+id.toString()+" fue ENTREGADA.");
+		} else if (estado == ConfigLoader.RECHAZADA) {
+			System.out.println("NO se puede entregar la orden con ID "+
+					id.toString()+" porque fue rechazada.");
 		} else {
-			//el ID no es válido
-			System.out.println("NO se puede aceptar la orden con ID "+
-					id.toString()+" porque la orden no fue recibida.");
+			System.out.println("NO se puede entregar la orden con ID "+
+					id.toString()+" porque no fue recibida.");
 		}
 		
 	}

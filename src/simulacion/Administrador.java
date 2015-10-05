@@ -5,11 +5,10 @@ import java.io.IOException;
 import common.ConfigLoader;
 import communication.ColaException;
 import communication.Queue;
-import communication.QueueProcesser;
 import communication.StockMessage;
 
 
-public class Administrador implements QueueProcesser<StockMessage> {
+public class Administrador {
 
 	public static void main(String[] args) {
 		
@@ -24,9 +23,10 @@ public class Administrador implements QueueProcesser<StockMessage> {
 			ConfigLoader conf = ConfigLoader.getInstance();
 			String stockQueue = conf.getAddStockQueueName();
 			
-			Administrador admin = new Administrador();
 			Queue<StockMessage> colaAgregarStock = 
-					new Queue<StockMessage>(stockQueue, admin);
+					new Queue<StockMessage>(
+							stockQueue, 
+							new NullProcesser<StockMessage>());
 
 			int tipo = Integer.parseInt(args[0]);
 			int cant = Integer.parseInt(args[1]);
@@ -53,9 +53,5 @@ public class Administrador implements QueueProcesser<StockMessage> {
 		} catch (ColaException e) {
 			System.out.println("ADMINISTRADOR - Error de la cola de mensajes.");
 		}
-	}
-
-	@Override
-	public void process(StockMessage message) {
 	}
 }

@@ -14,13 +14,19 @@ import communication.QueueProcesser;
 public class Logger implements QueueProcesser<NewOrderMessage> {
 	
 	private Queue<NewOrderMessage> colaLogging;
+	private BufferedWriter writer;
 	
 	private static class Quitter implements Runnable {
 		
-		private Queue<NewOrderMessage> colaLogging;	
+		private Queue<NewOrderMessage> colaLogging;
+		private BufferedWriter writer;
 
-		public Quitter(Queue<NewOrderMessage> colaLogging) {
+		public Quitter(
+				Queue<NewOrderMessage> colaLogging,
+				BufferedWriter writer) 
+		{
 			this.colaLogging = colaLogging;
+			this.writer = writer;
 		}
 		
 		@Override
@@ -30,8 +36,14 @@ public class Logger implements QueueProcesser<NewOrderMessage> {
 					colaLogging.disconnect();
 				} catch (ColaException e1) {
 					System.out.println("	LOGGER - "
-							+ "Error al desconectar cola de mensajes");
+							+ "Error al desconectar cola de mensajes.");
 				}
+			}
+			try {
+				writer.close();
+			} catch (IOException e) {
+				System.out.println("	LOGGER - "
+						+ "Error al cerrar el archivo de logging.");
 			}
 			System.out.println("Logger cerrado correctamente.");
 		}
@@ -44,9 +56,15 @@ public class Logger implements QueueProcesser<NewOrderMessage> {
 			//lee de la cola msj de pedido
 			ConfigLoader conf = ConfigLoader.getInstance();
 			String loggingQueue = conf.getLoggingQueueName();
-			
 			logger.colaLogging = 
 					new Queue<NewOrderMessage>(loggingQueue, logger);
+			
+			File file = new File(conf.getLogFilePath());
+			file.getParentFile().mkdirs();
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			logger.writer = new BufferedWriter(new FileWriter(file, true));
 
 			logger.colaLogging.connect();
 			logger.colaLogging.receive();
@@ -66,7 +84,7 @@ public class Logger implements QueueProcesser<NewOrderMessage> {
 			}
 		}*/
 		Runtime.getRuntime().addShutdownHook(new Thread(
-				new Quitter(logger.colaLogging))); 
+				new Quitter(logger.colaLogging,logger.writer))); 
 	}
 
 	@Override
@@ -76,17 +94,9 @@ public class Logger implements QueueProcesser<NewOrderMessage> {
 		Date time = new Date();
 		String msg = time+" : "+message.getID()+" Producto tipo: "+
 						message.getTipo()+" Cantidad: "+message.getCantidad();
-	
-		File file = new File(ConfigLoader.getInstance().getLogFilePath());
-		file.getParentFile().mkdirs();
-		if (!file.exists()) {
-			file.createNewFile();
-		}
-		BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
 		writer.write(msg);
 		writer.newLine();
 		writer.flush();
-		writer.close();
 	}
 
 }

@@ -11,10 +11,9 @@ import communication.ColaException;
 import communication.NewOrderMessage;
 import communication.OrderMessage;
 import communication.Queue;
-import communication.QueueProcesser;
 
 
-public class Cliente implements QueueProcesser<NewOrderMessage> {
+public class Cliente {
 
 	public static void main(String[] args) {
 		
@@ -25,19 +24,18 @@ public class Cliente implements QueueProcesser<NewOrderMessage> {
 
 		Queue<NewOrderMessage> colaPedidos = null;
 		Queue<OrderMessage> colaQueries = null;
-		
 		try {
 			ConfigLoader conf = ConfigLoader.getInstance();
 			String pedidosQueue = conf.getOrdersQueueName();
 			String queriesQueue = conf.getQueryStateQueueName();
 			
-			Cliente cliente = new Cliente();
-			ClienteConsulta clienteConsulta = new ClienteConsulta();
 			colaPedidos = 
-					new Queue<NewOrderMessage>(pedidosQueue, cliente);
+					new Queue<NewOrderMessage>(
+							pedidosQueue, 
+							new NullProcesser<NewOrderMessage>());
 			colaQueries = new Queue<OrderMessage>(
-												queriesQueue, 
-												clienteConsulta);
+							queriesQueue, 
+							new NullProcesser<OrderMessage>());
 			
 			//cargar ids
 			UUIDsReader idRead = new UUIDsReader();
@@ -53,9 +51,10 @@ public class Cliente implements QueueProcesser<NewOrderMessage> {
 			colaQueries.connect();
 
 			System.out.println(
-					"Iniciado CLIENTE. Creara "+vueltas+" de nuevas ordenes. "
+					"Iniciado CLIENTE. Creará "+vueltas+" de nuevas ordenes. "
 							+ "Luego dormirá "+time
-							+"consultará por el estado de esas ordenes.");
+							+"milisegundos y consultará por "
+							+ "el estado de esas ordenes.");
 			ArrayList<UUID> idsUsados = new ArrayList<UUID>();
 			
 			for (int i=0; i<vueltas;i++) {
@@ -80,8 +79,6 @@ public class Cliente implements QueueProcesser<NewOrderMessage> {
 				/*System.out.println(
 					"CLIENTE envio consulta por ID: "+mes.getOrderId()+".");*/
 			}
-			
-			
 		} catch (NumberFormatException e) {
 			System.out.println("						CLIENTE - "
 					+ "Parametro incorrecto.");
@@ -113,9 +110,5 @@ public class Cliente implements QueueProcesser<NewOrderMessage> {
 					"Finalizada simulacion de clientes. "
 					+ "Desconectado de las colas.");
 		}
-	}
-
-	@Override
-	public void process(NewOrderMessage message) {
 	}
 }

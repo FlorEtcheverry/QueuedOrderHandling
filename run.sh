@@ -57,7 +57,7 @@ done
 
 #procesos para simulacion
 #generador
-java -cp $CP simulacion.UUIDsGenerator $10
+java -cp $CP simulacion.UUIDsGenerator ${10}
 #cliente pedido
 java -cp $CP simulacion.Cliente $1 $2 &
 #update empleado

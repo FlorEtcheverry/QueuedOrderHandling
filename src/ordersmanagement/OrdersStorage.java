@@ -13,7 +13,7 @@ public class OrdersStorage extends Storage {
 	public OrdersStorage() {
 		super();
 	}
-	/*
+	/* TODO
 	private class Archivo {
 		public RandomAccessFile randomFile;
 		public FileChannel channel;
@@ -96,8 +96,11 @@ public class OrdersStorage extends Storage {
 				if (res == orden.length) {
 					String[] leido = linea.split("\\|");
 					String idStr = leido[0];
-					if (id.toString().equals(idStr) && leido[1].equals(
-									String.valueOf(ConfigLoader.RECIBIDA))) {
+					if (id.toString().equals(idStr) && 
+						(leido[1].equals(String.valueOf(ConfigLoader.RECIBIDA)) 
+						|| 
+						leido[1].equals(String.valueOf(ConfigLoader.ACEPTADA)))) 
+					{
 						file.seek(file.getFilePointer()-lineLength);
 						String nuevo = idStr+"|"+String.valueOf(estado);
 						file.write(nuevo.getBytes());
