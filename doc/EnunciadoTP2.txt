@@ -1,0 +1,14 @@
+-Recibir Orders (user,tipoProd,cantidad)
+-Mantener stock p/ cada tipo de prod (pocos tipos)
+-Loggear c/u de las Orders en un archivo por auditoria
+-Almacenar las Orders junto con el estado (RECIBIDO / RECHAZADO(no hay stock) / ACEPTADO(hay stock,resto,aviso?) / ENTREGADO) *
+-Recibir informacion sobre cambio de estados (idOrder -> entregada)
+-Atender consultas sobre estados de un Order
+NOO-Recibir cambios de stock por tipo-
+
+* idPedido + estado
+
+colas persistentes
+
+Entry points:
+por consola - generar (n) ordenes - n parametro, random a los otros. ahi, cada tanto (mod algo) se agrega stock a algun producto
